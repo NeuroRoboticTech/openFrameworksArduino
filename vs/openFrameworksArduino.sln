@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "openFrameworksArduino", "openFrameworksArduino.vcxproj", "{E19C1B8C-FDE9-F04B-8CC2-E2198378D11D}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ArduinoTest", "ArduinoTest.vcxproj", "{A1302288-99E8-DF4F-B538-551371384E4C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E19C1B8C-FDE9-F04B-8CC2-E2198378D11D} = {E19C1B8C-FDE9-F04B-8CC2-E2198378D11D}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E19C1B8C-FDE9-F04B-8CC2-E2198378D11D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E19C1B8C-FDE9-F04B-8CC2-E2198378D11D}.Debug|Win32.Build.0 = Debug|Win32
+		{E19C1B8C-FDE9-F04B-8CC2-E2198378D11D}.Release|Win32.ActiveCfg = Release|Win32
+		{E19C1B8C-FDE9-F04B-8CC2-E2198378D11D}.Release|Win32.Build.0 = Release|Win32
+		{A1302288-99E8-DF4F-B538-551371384E4C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A1302288-99E8-DF4F-B538-551371384E4C}.Debug|Win32.Build.0 = Debug|Win32
+		{A1302288-99E8-DF4F-B538-551371384E4C}.Release|Win32.ActiveCfg = Release|Win32
+		{A1302288-99E8-DF4F-B538-551371384E4C}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
