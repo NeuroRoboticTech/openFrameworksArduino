@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup Label="ProjectConfigurations">
-		<ProjectConfiguration Include="Debug|Win32">
+		<ProjectConfiguration Include="Debug|x64">
 			<Configuration>Debug</Configuration>
-			<Platform>Win32</Platform>
+			<Platform>x64</Platform>
 		</ProjectConfiguration>
-		<ProjectConfiguration Include="Release|Win32">
+		<ProjectConfiguration Include="Release|x64">
 			<Configuration>Release</Configuration>
-			<Platform>Win32</Platform>
+			<Platform>x64</Platform>
 		</ProjectConfiguration>
 	</ItemGroup>
 	<PropertyGroup Label="Globals">
-		<ProjectGuid>{F6E43E11-3AB8-E449-8708-4A781D9E2EA5}</ProjectGuid>
-		<RootNamespace>openFrameworksArduino</RootNamespace>
+		<ProjectGuid>{5673C42F-58B0-004E-A515-86185D849EE1}</ProjectGuid>
+		<RootNamespace>openFrameworksArduino_x64</RootNamespace>
 		<Keyword>Win32Proj</Keyword>
 	</PropertyGroup>
 	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
 		<ConfigurationType>DynamicLibrary</ConfigurationType>
 		<CharacterSet>MultiByte</CharacterSet>
 		<UseDebugLibraries>true</UseDebugLibraries>
 	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
 		<ConfigurationType>DynamicLibrary</ConfigurationType>
 		<CharacterSet>MultiByte</CharacterSet>
 		<WholeProgramOptimization>true</WholeProgramOptimization>
@@ -30,27 +30,27 @@
 	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
 	<ImportGroup Label="ExtensionSettings">
 	</ImportGroup>
-	<ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+	<ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
 		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
 	</ImportGroup>
-	<ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+	<ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
 		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
 	</ImportGroup>
 	<PropertyGroup Label="UserMacros" />
 	<PropertyGroup>
 		<_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
-		<OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Debug\</OutDir>
-		<IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">obj\x32\Debug\openFrameworksArduino\</IntDir>
-		<TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">openFrameworksArduinoD</TargetName>
-		<IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</IgnoreImportLibrary>
-		<LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
-		<OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Release\</OutDir>
-		<IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">obj\x32\Release\openFrameworksArduino\</IntDir>
-		<TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">openFrameworksArduino</TargetName>
-		<IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</IgnoreImportLibrary>
-		<LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+		<OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Debug\</OutDir>
+		<IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">obj\x64\Debug\openFrameworksArduino_x64\</IntDir>
+		<TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">openFrameworksArduinoD_x64</TargetName>
+		<IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</IgnoreImportLibrary>
+		<LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
+		<OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Release\</OutDir>
+		<IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">obj\x64\Release\openFrameworksArduino_x64\</IntDir>
+		<TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">openFrameworksArduino_x64</TargetName>
+		<IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</IgnoreImportLibrary>
+		<LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
 	</PropertyGroup>
-	<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+	<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
 		<ClCompile>
 			<Optimization>Disabled</Optimization>
 			<AdditionalIncludeDirectories>..\..\boost_1_54_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -62,23 +62,23 @@
 			<PrecompiledHeader></PrecompiledHeader>
 			<WarningLevel>Level3</WarningLevel>
 		<ExceptionHandling>Async</ExceptionHandling>
-			<DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+			<DebugInformationFormat>OldStyle</DebugInformationFormat>
 		</ClCompile>
 		<ResourceCompile>
 			<PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
 			<AdditionalIncludeDirectories>..\..\boost_1_54_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 		</ResourceCompile>
 		<Link>
-			<OutputFile>$(OutDir)openFrameworksArduinoD.dll</OutputFile>
-			<AdditionalLibraryDirectories>..\..\boost_1_54_0\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+			<OutputFile>$(OutDir)openFrameworksArduinoD_x64.dll</OutputFile>
+			<AdditionalLibraryDirectories>..\..\boost_1_54_0\lib_x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
 			<SubSystem>Windows</SubSystem>
 			<GenerateDebugInformation>true</GenerateDebugInformation>
-			<ProgramDataBaseFileName>$(OutDir)openFrameworksArduinoD.pdb</ProgramDataBaseFileName>
-			<ImportLibrary>Debug\openFrameworksArduinoD.lib</ImportLibrary>
-			<TargetMachine>MachineX86</TargetMachine>
+			<ProgramDataBaseFileName>$(OutDir)openFrameworksArduinoD_x64.pdb</ProgramDataBaseFileName>
+			<ImportLibrary>Debug\openFrameworksArduinoD_x64.lib</ImportLibrary>
+			<TargetMachine>MachineX64</TargetMachine>
 		</Link>
 	</ItemDefinitionGroup>
-	<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+	<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
 		<ClCompile>
 			<Optimization>Full</Optimization>
 			<AdditionalIncludeDirectories>..\..\boost_1_54_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -97,14 +97,14 @@
 			<AdditionalIncludeDirectories>..\..\boost_1_54_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 		</ResourceCompile>
 		<Link>
-			<OutputFile>$(OutDir)openFrameworksArduino.dll</OutputFile>
-			<AdditionalLibraryDirectories>..\..\boost_1_54_0\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+			<OutputFile>$(OutDir)openFrameworksArduino_x64.dll</OutputFile>
+			<AdditionalLibraryDirectories>..\..\boost_1_54_0\lib_x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
 			<SubSystem>Windows</SubSystem>
 			<GenerateDebugInformation>false</GenerateDebugInformation>
 			<OptimizeReferences>true</OptimizeReferences>
 			<EnableCOMDATFolding>true</EnableCOMDATFolding>
-			<ImportLibrary>Release\openFrameworksArduino.lib</ImportLibrary>
-			<TargetMachine>MachineX86</TargetMachine>
+			<ImportLibrary>Release\openFrameworksArduino_x64.lib</ImportLibrary>
+			<TargetMachine>MachineX64</TargetMachine>
 		</Link>
 	</ItemDefinitionGroup>
 	<ItemGroup>

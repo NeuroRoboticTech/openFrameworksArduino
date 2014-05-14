@@ -84,6 +84,11 @@
 #define FIRMATA_SYSEX_NON_REALTIME                      0x7E // MIDI Reserved for non-realtime messages
 #define FIRMATA_SYSEX_REALTIME                          0x7F // MIDI Reserved for realtime messages
 
+#define MAX_DYNAMIXEL_SERVOS							256
+#define DYNAMIXEL_DATA_LENGTH							9*2+1
+
+#define SYSEX_DYNAMIXEL_SERVO_DATA                      0x68 // Data packet of Dynamixel data.
+
 // ---- arduino constants (for Arduino NG and Diecimila)
 
 // board settings
@@ -141,6 +146,28 @@
 		use the OFstdFirmata for servo support...
 
 **/
+
+class ARDUINO_PORT ofDynamixelData {
+public:
+	unsigned int _goalPosition;
+	unsigned int _actualPosition;
+	unsigned int _goalSpeed;
+	unsigned int _actualSpeed;
+	unsigned int _load;
+	unsigned char _temperature;
+	unsigned char _voltage;
+
+	ofDynamixelData()
+	{
+		_goalPosition = 0;
+		_actualPosition = 0;
+		_goalSpeed = 0;
+		_actualSpeed = 0;
+		_load = 0;
+		_temperature = 0;
+		_voltage = 0;
+	};
+};
 
 
 class ARDUINO_PORT ofArduino{
@@ -287,6 +314,12 @@ class ARDUINO_PORT ofArduino{
 				int getValueFromTwo7bitBytes(unsigned char lsb, unsigned char msb);
 				// useful for parsing SysEx messages
 
+				unsigned int getByteFromDataIterator(std::vector<unsigned char>::iterator &it);
+				// useful for parsing SysEx messages
+
+				unsigned int GetWordFromDataIterator(std::vector<unsigned char>::iterator &it);
+				// useful for parsing SysEx messages
+
 				// --- events
 
 				boost::signals2::signal<void (const int)> EDigitalPinChanged;
@@ -310,6 +343,9 @@ class ARDUINO_PORT ofArduino{
 
 				boost::signals2::signal<void (const std::string)> EStringReceived;
 				// triggered when a string is received, the string is passed as an argument
+
+				boost::signals2::signal<void (const int)> EDynamixelReceived;
+				// triggered when a dynamixel data update packet is received, the servo ID is passed as an argument
 
 				// -- servo
 			    void sendServo(int pin, int value, bool force=false);
@@ -405,6 +441,8 @@ class ARDUINO_PORT ofArduino{
 
 				int _analogPinReporting[ARD_TOTAL_ANALOG_PINS];
 				// whether pin reporting is enabled / disabled
+
+				ofDynamixelData _dynamixelServos[MAX_DYNAMIXEL_SERVOS];
 
 				bool bUseDelay;
 

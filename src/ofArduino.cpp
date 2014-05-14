@@ -113,11 +113,18 @@ void ofArduino::initPins() {
 }
 
 bool ofArduino::connect(std::string device, int baud){
-	m_Timer.restart();
-	_initialized = false;
-	_port.enumerateDevices();
-	connected = _port.setup(device.c_str(), baud);
-	return connected;
+	try
+	{
+		m_Timer.restart();
+		_initialized = false;
+		_port.enumerateDevices();
+		connected = _port.setup(device.c_str(), baud);
+		return connected;
+	}
+	catch(...)
+	{
+		return false;
+	}
 }
 
 // this method is not recommended
@@ -489,6 +496,8 @@ void ofArduino::processSysExData(std::vector<unsigned char> data){
 
 	std::vector<unsigned char>::iterator it;
 	unsigned char buffer;
+	unsigned int iID = 0;
+	int iSize=0;
 	//int i = 1;
 
 	// act on reserved sysEx messages (extended commands) or trigger SysEx event...
@@ -537,6 +546,39 @@ void ofArduino::processSysExData(std::vector<unsigned char> data){
 					_stringHistory.pop_back();
 
 			EStringReceived(str);
+		break;
+		case SYSEX_DYNAMIXEL_SERVO_DATA:
+			it = data.begin();
+			it++; // skip the first byte, which is the Dynamixel servo command
+
+			//Get the servo ID number
+			iID = getByteFromDataIterator(it);
+
+			if(iID < MAX_DYNAMIXEL_SERVOS && data.size() == DYNAMIXEL_DATA_LENGTH)
+			{
+				//Now get current position.
+				
+				unsigned int iPos = GetWordFromDataIterator(it);
+				_dynamixelServos[iID]._actualPosition = iPos;
+
+				//Now get the speed.
+				unsigned int iSpeed = GetWordFromDataIterator(it);
+				_dynamixelServos[iID]._actualSpeed = iSpeed;
+
+				//Now get the load.
+				unsigned int iLoad = GetWordFromDataIterator(it);
+				_dynamixelServos[iID]._load = iLoad;
+
+				//Now get the voltage.
+				unsigned char cVoltage = getByteFromDataIterator(it);
+				_dynamixelServos[iID]._voltage = cVoltage;
+
+				//Now get the voltage.
+				unsigned char cTemp = getByteFromDataIterator(it);
+				_dynamixelServos[iID]._temperature = cTemp;
+			}
+
+			EDynamixelReceived(iID);
 		break;
 		default: // the message isn't in Firmatas extended command set
 			_sysExHistory.push_front(data);
@@ -739,6 +781,23 @@ void ofArduino::sendValueAsTwo7bitBytes(int value)
 // SysEx data is sent as 8-bit bytes split into two 7-bit bytes, this function merges two 7-bit bytes back into one 8-bit byte.
 int ofArduino::getValueFromTwo7bitBytes(unsigned char lsb, unsigned char msb){
    return (msb << 7) | lsb;
+}
+
+// SysEx data is sent as 8-bit bytes split into two 7-bit bytes, this function merges two 7-bit bytes back into one 8-bit byte.
+unsigned int ofArduino::getByteFromDataIterator(std::vector<unsigned char>::iterator &it){
+	unsigned char lsb = (*it++);
+	unsigned char msb = (*it++);
+
+   return (unsigned int) ((msb << 7) | lsb);
+}
+
+unsigned int ofArduino::GetWordFromDataIterator(std::vector<unsigned char>::iterator &it)
+{
+	int lsb = getByteFromDataIterator(it);
+	int msb = getByteFromDataIterator(it);
+
+	int iRet = (msb << 8) | lsb;
+	return iRet;
 }
 
 void ofArduino::sendServo(int pin, int value, bool force){

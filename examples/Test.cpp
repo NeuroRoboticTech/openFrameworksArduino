@@ -33,13 +33,13 @@ int main(int argc, char** argv)
 			{
 				//rotate servo head to 180 degrees
 				std::cout << "motor: 180\r\n";
-				ard.sendServo(9, 180);
+				//ard.sendServo(9, 180);
 			}
 			else
 			{
 				//rotate servo head to 0 degrees
 				std::cout << "motor: 0\r\n";
-				ard.sendServo(9, 0);
+				//ard.sendServo(9, 0);
 			}
 		}
 
