@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="openFrameworksArduino" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="Debug/libopenFrameworksArduinoD.so" prefix_auto="0" extension_auto="0" />
+				<Option object_output="obj/Debug/openFrameworksArduino" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createDefFile="0" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-fPIC" />
+					<Add option="-D_DEBUG" />
+					<Add option="-std=c++11" />
+				</Compiler>
+				<Linker>
+					<Add option="-shared" />
+					<Add library="dl" />
+				</Linker>
+			</Target>
+			<Target title="Release">
+				<Option output="Release/libopenFrameworksArduino.so" prefix_auto="0" extension_auto="0" />
+				<Option object_output="obj/Release/openFrameworksArduino" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createDefFile="0" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-fPIC" />
+					<Add option="-DNDEBUG" />
+					<Add option="-std=c++11" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-shared" />
+					<Add library="dl" />
+				</Linker>
+			</Target>
+		</Build>
+		<Unit filename="../src/ofArduino.h">
+		</Unit>
+		<Unit filename="../src/ofConstants.h">
+		</Unit>
+		<Unit filename="../src/ofSerial.h">
+		</Unit>
+		<Unit filename="../src/ofTypes.h">
+		</Unit>
+		<Unit filename="../src/StdAfx.h">
+		</Unit>
+		<Unit filename="../src/ofArduino.cpp">
+		</Unit>
+		<Unit filename="../src/ofSerial.cpp">
+		</Unit>
+		<Extensions />
+	</Project>
+</CodeBlocks_project_file>
+
