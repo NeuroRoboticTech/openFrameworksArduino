@@ -6,7 +6,7 @@ solution "openFrameworksArduino"
 		language "C++"
 		kind     "SharedLib"
 		files  { "../src/*.h",
-				 "../src/*.cpp"}
+		         "../src/*.cpp"}
 		buildoptions { "-std=c++11" }
 		links { "dl" }
 		
@@ -34,11 +34,11 @@ solution "openFrameworksArduino"
 			flags   { "Symbols", "SEH" }
 			targetdir ("Debug")
 			targetname ("ArduinoTestD")
-			links { "openFrameworksArduino" }
+			links { "openFrameworksArduino", "boost_thread" }
 	 
 		configuration { "Release", "linux" }
 			defines { "NDEBUG" }
 			flags   { "Optimize", "SEH" }
 			targetdir ("Release")
 			targetname ("ArduinoTest")
-			links { "openFrameworksArduino" }
+			links { "openFrameworksArduino", "boost_thread" }
