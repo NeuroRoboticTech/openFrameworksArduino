@@ -244,7 +244,7 @@ class ARDUINO_PORT ofArduino{
 				void sendSysExEnd();
 				// sends the FIRMATA_END_SYSEX command
 
-				void sendByte(unsigned char byte);
+				void sendByte(unsigned char value);
 				// sends a byte without wrapping it in a firmata message, data has to be in the 0-127 range,
 				// values > 127 will be interpreted as commands.
 

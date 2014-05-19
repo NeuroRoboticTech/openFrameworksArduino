@@ -763,11 +763,11 @@ void ofArduino::sendDigitalPinReporting(int pin, int mode){
 	}
 }
 
-void ofArduino::sendByte(unsigned char byte){
+void ofArduino::sendByte(unsigned char value){
 	//char msg[100];
 	//sprintf(msg, "Sending Byte: %i", byte);
 	//Logger::get("Application").information(msg);
-	_port.writeByte(byte);
+	_port.writeByte(value);
 }
 
 // in Firmata (and MIDI) data bytes are 7-bits. The 8th bit serves as a flag to mark a byte as either command or data.
