@@ -11,12 +11,13 @@
 				<Option object_output="obj/Debug/openFrameworksArduino" />
 				<Option type="3" />
 				<Option compiler="gcc" />
+				<Option createDefFile="0" />
 				<Option createStaticLib="1" />
 				<Compiler>
-					<Add option="-std=c++0x" />
 					<Add option="-g" />
 					<Add option="-fPIC" />
 					<Add option="-D_DEBUG" />
+					<Add option="-std=c++11" />
 				</Compiler>
 				<Linker>
 					<Add option="-shared" />
@@ -28,12 +29,13 @@
 				<Option object_output="obj/Release/openFrameworksArduino" />
 				<Option type="3" />
 				<Option compiler="gcc" />
+				<Option createDefFile="0" />
 				<Option createStaticLib="1" />
 				<Compiler>
 					<Add option="-O2" />
-					<Add option="-std=c++0x" />
 					<Add option="-fPIC" />
 					<Add option="-DNDEBUG" />
+					<Add option="-std=c++11" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -42,17 +44,21 @@
 				</Linker>
 			</Target>
 		</Build>
-		<Unit filename="../src/StdAfx.h" />
-		<Unit filename="../src/ofArduino.cpp" />
-		<Unit filename="../src/ofArduino.h" />
-		<Unit filename="../src/ofConstants.h" />
-		<Unit filename="../src/ofSerial.cpp" />
-		<Unit filename="../src/ofSerial.h" />
-		<Unit filename="../src/ofTypes.h" />
-		<Extensions>
-			<code_completion />
-			<envvars />
-			<debugger />
-		</Extensions>
+		<Unit filename="../src/ofArduino.h">
+		</Unit>
+		<Unit filename="../src/ofConstants.h">
+		</Unit>
+		<Unit filename="../src/ofSerial.h">
+		</Unit>
+		<Unit filename="../src/ofTypes.h">
+		</Unit>
+		<Unit filename="../src/StdAfx.h">
+		</Unit>
+		<Unit filename="../src/ofArduino.cpp">
+		</Unit>
+		<Unit filename="../src/ofSerial.cpp">
+		</Unit>
+		<Extensions />
 	</Project>
 </CodeBlocks_project_file>
+
