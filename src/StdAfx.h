@@ -9,3 +9,5 @@
 #else
     #define ARDUINO_PORT
 #endif
+
+#pragma warning(disable:4996) 

@@ -14,15 +14,45 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/thread/thread.hpp>
 
+#define INCLUDE_TIMING
+
+#ifdef INCLUDE_TIMING
+	//Include the timer code and openthreads code from osg
+	#include <osg/Timer>
+	#include <OpenThreads/Thread>
+	#ifdef _DEBUG
+		#pragma comment(lib, "osgd.lib")
+		#pragma comment(lib, "OpenThreadsd.lib")
+	#else
+		#pragma comment(lib, "osg.lib")
+		#pragma comment(lib, "OpenThreads.lib")
+	#endif
+#endif
+
 class ArduinoTest : public ofArduino
 {
 protected:
 	boost::signals2::connection m_EInitializedConnection;
 	boost::signals2::connection m_EDigitalPinChanged;
 	boost::signals2::connection m_EAnalogPinChanged;
+	boost::signals2::connection m_ECommanderChanged;
+	boost::signals2::connection m_EDynamixelReceived;
+	boost::signals2::connection m_EDynamixelTransmitError;
+
+	bool m_bSwingLeg;
 
 	void digitalPinChanged(const int & pinNum);
 	void analogPinChanged(const int & pinNum);
+	void commanderChanged(const int & pinNum);
+	void dynamixelRecieved(const int & servoNum);
+	void dynamixelTransmitError(const int & cmd, const int & servoNum);
+
+#ifdef INCLUDE_TIMING
+	unsigned long long m_lStartTick;
+	unsigned long long m_lEndTick;
+	double m_dblTotalMillis;
+	long m_lTotalCount;
+#endif
 
 public:
 	ArduinoTest(void);

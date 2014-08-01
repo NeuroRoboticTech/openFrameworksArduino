@@ -84,10 +84,21 @@
 #define FIRMATA_SYSEX_NON_REALTIME                      0x7E // MIDI Reserved for non-realtime messages
 #define FIRMATA_SYSEX_REALTIME                          0x7F // MIDI Reserved for realtime messages
 
-#define MAX_DYNAMIXEL_SERVOS							256
-#define DYNAMIXEL_DATA_LENGTH							9*2+1
+#define MAX_DYNAMIXEL_SERVOS							30
+#define DYNAMIXEL_KEY_DATA_LENGTH						7*2+1
+#define DYNAMIXEL_ALL_DATA_LENGTH						10*2+1
+#define COMMANDER_DATA_LENGTH							9*2+1
 
-#define SYSEX_DYNAMIXEL_SERVO_DATA                      0x68 // Data packet of Dynamixel data.
+#define SYSEX_DYNAMIXEL_KEY_SERVO_DATA                      0x68 // Data packet of key (pos, speed) Dynamixel data.
+#define SYSEX_DYNAMIXEL_ALL_SERVO_DATA                      0x67 // Data packet of all (pos, speed, load, voltage, temp) Dynamixel data.
+#define SYSEX_DYNAMIXEL_CONFIG		                        0x66 // Data packet to configure firmata to listen for dynamixel data.
+#define SYSEX_DYNAMIXEL_SYNCH_MOVE_START					0x65 // Data packet to configure up to 5 motors to move using synch move command.
+#define SYSEX_DYNAMIXEL_SYNCH_MOVE_ADD						0x64 // Data packet to configure up to 5 motors to move using synch move command.
+#define SYSEX_DYNAMIXEL_SYNCH_MOVE_EXECUTE					0x63 // Data packet to configure up to 5 motors to move using synch move command.
+#define SYSEX_DYNAMIXEL_MOVE								0x62 // Data packet to send immediate move command.
+#define SYSEX_DYNAMIXEL_TRANSMIT_ERROR						0x61 // Data packet to for when there is a transmission error detected on the arbotix side.
+#define SYSEX_DYNAMIXEL_ERROR								0x60 // Data packet to for when there is an error with one of the dynamixel servos.
+#define SYSEX_COMMANDER_DATA		                        0x59 // Data packet with commander remote control buttons pressed.
 
 // ---- arduino constants (for Arduino NG and Diecimila)
 
@@ -149,6 +160,7 @@
 
 class ARDUINO_PORT ofDynamixelData {
 public:
+	unsigned int _id;
 	unsigned int _goalPosition;
 	unsigned int _actualPosition;
 	unsigned int _goalSpeed;
@@ -159,6 +171,7 @@ public:
 
 	ofDynamixelData()
 	{
+		_id = 0;
 		_goalPosition = 0;
 		_actualPosition = 0;
 		_goalSpeed = 0;
@@ -166,6 +179,26 @@ public:
 		_load = 0;
 		_temperature = 0;
 		_voltage = 0;
+	};
+};
+
+class ARDUINO_PORT ofCommanderData {
+public:
+	signed char _walkV;
+	signed char _walkH;
+	signed char _lookV;
+	signed char _lookH;
+	unsigned char _buttons;
+	unsigned char _ext;
+
+	ofCommanderData()
+	{
+		_walkV = 0;
+		_walkH = 0;
+		_lookV = 0;
+		_lookH = 0;
+		_buttons = 0;
+		_ext = 0;
 	};
 };
 
@@ -304,6 +337,19 @@ class ARDUINO_PORT ofArduino{
 
 				std::list<std::string>* getStringHistory();
 				// returns a pointer to the string history
+				
+				int makeWord(unsigned char low, unsigned char  high);
+				//Combines two bytes into a word
+
+				unsigned char  getLowByte(int val); 
+				//Gets the low byte of an int
+
+				unsigned char  getHighByte(int val); 
+				//gets the high byte of an int.
+
+				ofDynamixelData _dynamixelServos[MAX_DYNAMIXEL_SERVOS];
+
+				ofCommanderData _commanderData;
 
 				int getDigitalPinMode(int pin);
 				// returns ARD_INPUT, ARD_OUTPUT, ARD_PWM, ARD_SERVO, ARD_ANALOG
@@ -314,10 +360,10 @@ class ARDUINO_PORT ofArduino{
 				int getValueFromTwo7bitBytes(unsigned char lsb, unsigned char msb);
 				// useful for parsing SysEx messages
 
-				unsigned int getByteFromDataIterator(std::vector<unsigned char>::iterator &it);
+				unsigned int getByteFromDataIterator(std::vector<unsigned char>::iterator &it, std::vector<unsigned char>::iterator &end);
 				// useful for parsing SysEx messages
 
-				unsigned int GetWordFromDataIterator(std::vector<unsigned char>::iterator &it);
+				unsigned int GetWordFromDataIterator(std::vector<unsigned char>::iterator &it, std::vector<unsigned char>::iterator &end);
 				// useful for parsing SysEx messages
 
 				// --- events
@@ -347,6 +393,12 @@ class ARDUINO_PORT ofArduino{
 				boost::signals2::signal<void (const int)> EDynamixelReceived;
 				// triggered when a dynamixel data update packet is received, the servo ID is passed as an argument
 
+				boost::signals2::signal<void (const int, const int)> EDynamixelTransmitError;
+				// triggered when the arbotix gets a transmission error like an invalid checksum
+				
+				boost::signals2::signal<void (const int)> ECommanderDataReceived;
+				// triggered when a commander data update packet is received, the servo ID is passed as an argument
+
 				// -- servo
 			    void sendServo(int pin, int value, bool force=false);
                 // pin: 9, 10
@@ -364,6 +416,26 @@ class ARDUINO_PORT ofArduino{
 
 				int getServo(int pin);
 				// returns the last set servo value for a pin if the pin has a servo attached
+
+				//Tells an arbotix board to monitor a given servo and report back its data.
+				void sendDynamixelServoAttach(unsigned char servo);
+
+				//Tells an arbotix board to quit monitoring a given servo and report back its data.
+				void sendDynamixelServoDetach(unsigned char servo);
+
+				//Sends a SynchMove start command to the Arbotix telling it that a new set of move commands are coming.
+				void sendDynamixelSynchMoveStart();
+
+				//Transmits the command to setup a motor as part of a synch motor move command.
+				//You can setup any number of moves to participate in this move command and then
+				//call sendDynamixelSynchMoveExecute to trigger the movement.
+				void sendDynamixelSynchMoveAdd(unsigned char servo, int pos, int speed);
+
+				//Transmits the command to move the servos that have been setup using addDynamixelSynchMove
+				void sendDynamixelSynchMoveExecute();
+
+				//Transmits the command to move a single motor. Does not use the synch move.
+				void ofArduino::sendDynamixelMove(unsigned char servo, int pos, int speed);
 
 		protected:
 				bool _initialized;
@@ -442,8 +514,6 @@ class ARDUINO_PORT ofArduino{
 				int _analogPinReporting[ARD_TOTAL_ANALOG_PINS];
 				// whether pin reporting is enabled / disabled
 
-				ofDynamixelData _dynamixelServos[MAX_DYNAMIXEL_SERVOS];
-
 				bool bUseDelay;
 
 				bool connected;
@@ -451,7 +521,7 @@ class ARDUINO_PORT ofArduino{
 				int _servoValue[ARD_TOTAL_DIGITAL_PINS];
                 // the last set servo values
 
-				boost::timer m_Timer;
+				boost::timer _Timer;
 };
 
 typedef ofArduino ofStandardFirmata;

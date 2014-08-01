@@ -115,7 +115,7 @@ void ofArduino::initPins() {
 bool ofArduino::connect(std::string device, int baud){
 	try
 	{
-		m_Timer.restart();
+		_Timer.restart();
 		_initialized = false;
 		_port.enumerateDevices();
 		connected = _port.setup(device.c_str(), baud);
@@ -131,7 +131,7 @@ bool ofArduino::connect(std::string device, int baud){
 // the preferred method is to listen for the EInitialized event in your application
 bool ofArduino::isArduinoReady(){	
 	if(bUseDelay) {
-		if (_initialized || (m_Timer.elapsed() > OF_ARDUINO_DELAY_LENGTH)) {
+		if (_initialized || (_Timer.elapsed() > OF_ARDUINO_DELAY_LENGTH)) {
 			initPins();
 			connected = true;
 		}
@@ -392,6 +392,21 @@ std::string ofArduino::getFirmwareName(){
 	return _firmwareName;
 }
 
+int ofArduino::makeWord(unsigned char  low, unsigned char  high) 
+{
+	return (int) (low + (high<<8));
+}
+
+unsigned char  ofArduino::getLowByte(int val) 
+{
+	return (unsigned char ) (val & 0xff);
+}
+
+unsigned char  ofArduino::getHighByte(int val) 
+{
+	return (unsigned char ) ((val & 0xff00)>> 8);
+}
+
 bool ofArduino::isInitialized(){
 	return _initialized;
 }
@@ -497,6 +512,8 @@ void ofArduino::processSysExData(std::vector<unsigned char> data){
 	std::vector<unsigned char>::iterator it;
 	unsigned char buffer;
 	unsigned int iID = 0;
+	unsigned char iCmd = 0;
+	int iChecksum = 0, iRecChecksum = 0;
 	int iSize=0;
 	//int i = 1;
 
@@ -547,38 +564,105 @@ void ofArduino::processSysExData(std::vector<unsigned char> data){
 
 			EStringReceived(str);
 		break;
-		case SYSEX_DYNAMIXEL_SERVO_DATA:
+		case SYSEX_DYNAMIXEL_KEY_SERVO_DATA:
 			it = data.begin();
 			it++; // skip the first byte, which is the Dynamixel servo command
 
 			//Get the servo ID number
-			iID = getByteFromDataIterator(it);
+			iID = getByteFromDataIterator(it, data.end());
 
-			if(iID < MAX_DYNAMIXEL_SERVOS && data.size() == DYNAMIXEL_DATA_LENGTH)
+			if(iID < MAX_DYNAMIXEL_SERVOS && data.size() == DYNAMIXEL_KEY_DATA_LENGTH)
 			{
 				//Now get current position.
-				
-				unsigned int iPos = GetWordFromDataIterator(it);
-				_dynamixelServos[iID]._actualPosition = iPos;
+				unsigned int iPos = GetWordFromDataIterator(it, data.end());
 
 				//Now get the speed.
-				unsigned int iSpeed = GetWordFromDataIterator(it);
-				_dynamixelServos[iID]._actualSpeed = iSpeed;
+				unsigned int iSpeed = GetWordFromDataIterator(it, data.end());
+
+				//Get the checksum
+				unsigned char iRecChecksum = getByteFromDataIterator(it, data.end());
+				unsigned int iCheckSum = (~(iID + iPos + iSpeed)) & 0xFF;
+
+				if(iCheckSum == iRecChecksum)
+				{
+					_dynamixelServos[iID]._actualPosition = iPos;
+					_dynamixelServos[iID]._actualSpeed = iSpeed;
+
+					EDynamixelReceived(iID);
+				}
+			}
+		break;
+		case SYSEX_DYNAMIXEL_ALL_SERVO_DATA:
+			it = data.begin();
+			it++; // skip the first byte, which is the Dynamixel servo command
+
+			//Get the servo ID number
+			iID = getByteFromDataIterator(it, data.end());
+
+			if(iID < MAX_DYNAMIXEL_SERVOS && data.size() == DYNAMIXEL_ALL_DATA_LENGTH)
+			{
+				//Now get current position.
+				unsigned int iPos = GetWordFromDataIterator(it, data.end());
+
+				//Now get the speed.
+				unsigned int iSpeed = GetWordFromDataIterator(it, data.end());
 
 				//Now get the load.
-				unsigned int iLoad = GetWordFromDataIterator(it);
-				_dynamixelServos[iID]._load = iLoad;
+				unsigned int iLoad = GetWordFromDataIterator(it, data.end());
 
 				//Now get the voltage.
-				unsigned char cVoltage = getByteFromDataIterator(it);
-				_dynamixelServos[iID]._voltage = cVoltage;
+				unsigned char cVoltage = getByteFromDataIterator(it, data.end());
 
 				//Now get the voltage.
-				unsigned char cTemp = getByteFromDataIterator(it);
-				_dynamixelServos[iID]._temperature = cTemp;
+				unsigned char cTemp = getByteFromDataIterator(it, data.end());
+
+				//Get the checksum
+				unsigned char iRecChecksum = getByteFromDataIterator(it, data.end());
+				unsigned int iCheckSum = (~(iID + iPos + iSpeed + iLoad + cVoltage, cTemp)) & 0xFF;
+
+				if(iCheckSum == iRecChecksum)
+				{
+					_dynamixelServos[iID]._actualPosition = iPos;
+					_dynamixelServos[iID]._actualSpeed = iSpeed;
+					_dynamixelServos[iID]._load = iLoad;
+					_dynamixelServos[iID]._voltage = cVoltage;
+					_dynamixelServos[iID]._temperature = cTemp;
+
+					EDynamixelReceived(iID);
+				}
 			}
+		break;
+		case SYSEX_DYNAMIXEL_TRANSMIT_ERROR:
+			it = data.begin();
+			it++; // skip the first byte, which is the Dynamixel servo command
 
-			EDynamixelReceived(iID);
+			//Get the command value
+			iCmd = getByteFromDataIterator(it, data.end());
+
+			//Get the servo ID number
+			iID = getByteFromDataIterator(it, data.end());
+
+			//Get the servo ID number
+			iRecChecksum = getByteFromDataIterator(it, data.end());
+
+			//Get the servo ID number
+			iChecksum = (~(iCmd + iID)) & 0xFF;
+
+			if(iChecksum == iRecChecksum)
+				EDynamixelTransmitError(iCmd, iID);
+		break;
+		case SYSEX_COMMANDER_DATA:
+			it = data.begin();
+			it++; // skip the first byte, which is the Commander command
+
+			_commanderData._walkV = (signed char) getByteFromDataIterator(it, data.end());
+			_commanderData._walkH = (signed char) getByteFromDataIterator(it, data.end());
+			_commanderData._lookV = (signed char) getByteFromDataIterator(it, data.end());
+			_commanderData._lookH = (signed char) getByteFromDataIterator(it, data.end());
+			_commanderData._buttons = (signed char) getByteFromDataIterator(it, data.end());
+			//_commanderData._ext = (signed char) getByteFromDataIterator(it, data.end());
+
+			ECommanderDataReceived(iID);
 		break;
 		default: // the message isn't in Firmatas extended command set
 			_sysExHistory.push_front(data);
@@ -784,17 +868,22 @@ int ofArduino::getValueFromTwo7bitBytes(unsigned char lsb, unsigned char msb){
 }
 
 // SysEx data is sent as 8-bit bytes split into two 7-bit bytes, this function merges two 7-bit bytes back into one 8-bit byte.
-unsigned int ofArduino::getByteFromDataIterator(std::vector<unsigned char>::iterator &it){
+unsigned int ofArduino::getByteFromDataIterator(std::vector<unsigned char>::iterator &it, std::vector<unsigned char>::iterator &end){
+	if(it == end) 
+		return 0;
 	unsigned char lsb = (*it++);
+	
+	if(it == end) 
+		return 0;
 	unsigned char msb = (*it++);
 
    return (unsigned int) ((msb << 7) | lsb);
 }
 
-unsigned int ofArduino::GetWordFromDataIterator(std::vector<unsigned char>::iterator &it)
+unsigned int ofArduino::GetWordFromDataIterator(std::vector<unsigned char>::iterator &it, std::vector<unsigned char>::iterator &end)
 {
-	int lsb = getByteFromDataIterator(it);
-	int msb = getByteFromDataIterator(it);
+	int lsb = getByteFromDataIterator(it, end);
+	int msb = getByteFromDataIterator(it, end);
 
 	int iRet = (msb << 8) | lsb;
 	return iRet;
@@ -862,3 +951,80 @@ int ofArduino::getServo(int pin){
 	else
 		return -1;
 }
+
+//Tells an arbotix board to monitor a given servo and report back its data.
+//Please note that this will ONLY work for an arbotix arduino board
+void ofArduino::sendDynamixelServoAttach(unsigned char servo) {
+	//Send a sysex to report a dynamixel servo
+	std::vector<unsigned char> sysexData;
+	sysexData.push_back(servo);
+	sysexData.push_back(1);
+	this->sendSysEx(SYSEX_DYNAMIXEL_CONFIG, sysexData);
+}
+
+//Tells an arbotix board to quit monitoring a given servo and report back its data.
+//Please note that this will ONLY work for an arbotix arduino board
+void ofArduino::sendDynamixelServoDetach(unsigned char servo) {
+	//Send a sysex to report a dynamixel servo
+	std::vector<unsigned char> sysexData;
+	sysexData.push_back(servo);
+	sysexData.push_back(0);
+	this->sendSysEx(SYSEX_DYNAMIXEL_CONFIG, sysexData);
+}
+
+//Starts a synch move command for the dynamixel motors. You can then set up to 4 motors to be moved at once.
+//Please note that this will ONLY work for an arbotix arduino board
+void ofArduino::sendDynamixelSynchMoveStart() {
+	//Send a sysex to let the arbotix know that we are starting a new synch move command
+	std::vector<unsigned char> sysexData;
+	this->sendSysEx(SYSEX_DYNAMIXEL_SYNCH_MOVE_START, sysexData);
+}
+
+//Adds a move command for the given servo to the list to be send.
+//Please note that this will ONLY work for an arbotix arduino board
+void ofArduino::sendDynamixelSynchMoveAdd(unsigned char servo, int pos, int speed) {
+	unsigned char pos0 = getLowByte(pos);
+	unsigned char pos1 = getHighByte(pos);
+	unsigned char speed0 = getLowByte(speed);
+	unsigned char speed1 = getHighByte(speed);
+	int checksum = (~(servo + pos0 + pos1 + speed0 + speed1)) & 0xFF;
+
+	//Send a sysex to add this motor to the list for the synch move
+	std::vector<unsigned char> sysexData;
+	sysexData.push_back(servo);
+	sysexData.push_back(pos0);
+	sysexData.push_back(pos1);
+	sysexData.push_back(speed0);
+	sysexData.push_back(speed1);
+	sysexData.push_back(checksum);
+	this->sendSysEx(SYSEX_DYNAMIXEL_SYNCH_MOVE_ADD, sysexData);
+}
+
+//Transmits the command to move the servos that have been setup using addDynamixelSynchMove
+//Please note that this will ONLY work for an arbotix arduino board
+void ofArduino::sendDynamixelSynchMoveExecute() {
+	//Send a sysex to tell the arbotix to execute the synch move
+	std::vector<unsigned char> sysexData;
+	this->sendSysEx(SYSEX_DYNAMIXEL_SYNCH_MOVE_EXECUTE, sysexData);
+}
+
+//Transmits the command to move a single motor. Does not use the synch move.
+//Please note that this will ONLY work for an arbotix arduino board
+void ofArduino::sendDynamixelMove(unsigned char servo, int pos, int speed) {
+	unsigned char pos0 = getLowByte(pos);
+	unsigned char pos1 = getHighByte(pos);
+	unsigned char speed0 = getLowByte(speed);
+	unsigned char speed1 = getHighByte(speed);
+	int checksum = (~(servo + pos0 + pos1 + speed0 + speed1)) & 0xFF;
+
+	//Send a sysex to let the arbotix know that we are starting a new synch move command
+	std::vector<unsigned char> sysexData;
+	sysexData.push_back(servo);
+	sysexData.push_back(pos0);
+	sysexData.push_back(pos1);
+	sysexData.push_back(speed0);
+	sysexData.push_back(speed1);
+	sysexData.push_back(checksum);
+	this->sendSysEx(SYSEX_DYNAMIXEL_MOVE, sysexData);
+}
+

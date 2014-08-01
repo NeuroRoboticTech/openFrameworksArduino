@@ -11,7 +11,7 @@
 		</ProjectConfiguration>
 	</ItemGroup>
 	<PropertyGroup Label="Globals">
-		<ProjectGuid>{F6E43E11-3AB8-E449-8708-4A781D9E2EA5}</ProjectGuid>
+		<ProjectGuid>{2099A93E-4017-DF4C-B9A9-A9B8A315C91A}</ProjectGuid>
 		<RootNamespace>openFrameworksArduino</RootNamespace>
 		<Keyword>Win32Proj</Keyword>
 	</PropertyGroup>

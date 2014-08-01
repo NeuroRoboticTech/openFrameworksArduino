@@ -29,8 +29,10 @@ solution "openFrameworksArduino"
 		files  { "../examples/*.h",
 				 "../examples/*.cpp"}
 		includedirs { "../../boost_1_54_0",
-					  "../src" }	  
-		libdirs { "../../boost_1_54_0/lib" }
+					  "../src",
+					  "../../OpenSceneGraph-3.0.1/include" }	  
+		libdirs { "../../boost_1_54_0/lib",
+				  "../../OpenSceneGraph-3.0.1/lib" }
 		
 		configuration { "Debug", "windows" }
 			defines { "WIN32", "_DEBUG", "_WINDOWS", "_USRDLL", "_CRT_SECURE_NO_WARNINGS" }

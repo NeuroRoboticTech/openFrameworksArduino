@@ -558,7 +558,7 @@ bool ofSerial::writeByte(unsigned char singleByte){
 			 //return OF_SERIAL_ERROR; // this looks wrong.
 			 return false;
 		}
-		std::cout << "wrote byte" << "\r\n";
+		//std::cout << "wrote byte" << "\r\n";
 
 		return (numWritten > 0 ? true : false);
     #endif
@@ -573,7 +573,7 @@ bool ofSerial::writeByte(unsigned char singleByte){
 			 return false;
 		}
 
-		std::cout << "wrote byte" << "\r\n";
+		//std::cout << "wrote byte" << "\r\n";
 
 		return ((int)written > 0 ? true : false);
 	#endif
