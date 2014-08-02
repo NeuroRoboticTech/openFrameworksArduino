@@ -618,7 +618,7 @@ void ofArduino::processSysExData(std::vector<unsigned char> data){
 
 				//Get the checksum
 				unsigned char iRecChecksum = getByteFromDataIterator(it, data.end());
-				unsigned int iCheckSum = (~(iID + iPos + iSpeed + iLoad + cVoltage, cTemp)) & 0xFF;
+				unsigned int iCheckSum = (~(iID + iPos + iSpeed + iLoad + cVoltage + cTemp)) & 0xFF;
 
 				if(iCheckSum == iRecChecksum)
 				{
