@@ -64,7 +64,7 @@
 #define DYNAMIXEL_RX_PIN 10	 
 #define DYNAMIXEL_TX_PIN 11
 
-#define ENABLE_COMMANDER 1
+//#define ENABLE_COMMANDER 1
 #define COMMANDER_RX_PIN 2	 
 #define COMMANDER_TX_PIN 3
 
@@ -116,8 +116,6 @@ Servo servos[MAX_SERVOS];
 byte customSysExLength = 0;
 byte aryCustomSysEx[64];
 
-CommanderData commanderData;
-
 struct dynamixelData {
   byte servo;
   int pos;
@@ -147,14 +145,11 @@ dynamixelData synchMoveData[DYNAMIXEL_TOTAL_SERVOS];
 //sending the data back to the computer
 dynamixelReadData reportDynData[DYNAMIXEL_TOTAL_SERVOS];
 
-SoftwareSerial commanderSerial = SoftwareSerial(COMMANDER_RX_PIN, COMMANDER_TX_PIN); // RX, TX
-CommanderSS command = CommanderSS(&commanderSerial);
-
-#ifdef DEBUG_SERIAL
-//Create objects to talk to Commander using the software serial port
-//SoftwareSerial commanderSerial = commanderSerial; // = SoftwareSerial(DEBUG_RX_PIN, DEBUG_TX_PIN); // RX, TX
+#ifdef ENABLE_COMMANDER
+  CommanderData commanderData;
+  SoftwareSerial commanderSerial = SoftwareSerial(COMMANDER_RX_PIN, COMMANDER_TX_PIN); // RX, TX
+  CommanderSS command = CommanderSS(&commanderSerial);
 #endif
-
 
 /*==============================================================================
  * FUNCTIONS
@@ -657,7 +652,7 @@ void sysexCallback(byte command, byte argc, byte *argv)
     break;
   case SYSEX_DYNAMIXEL_SYNCH_MOVE_START: {
 #ifdef DEBUG_SERIAL
-      commanderSerial.println("Recieved start Dynamixel synch move");
+      //commanderSerial.println("Recieved start Dynamixel synch move");
 #endif
       totalSynchServos = 0;
     }
@@ -800,6 +795,7 @@ void systemResetCallback()
       reportDynData[i].data[j] = -1;
   }
 
+#ifdef ENABLE_COMMANDER
   //Setup command data with bad values at the start so as soon as we get an incoming packet it will 
   //not match the default positions and need to send the first packet.
   commanderData.walkV = -250;
@@ -807,6 +803,7 @@ void systemResetCallback()
   commanderData.lookV = -250;
   commanderData.lookH = -250;
   commanderData.buttons = -250;
+#endif
 
   /* send digital inputs to set the initial state on the host computer,
    * since once in the loop(), this firmware will only send on change */
@@ -909,6 +906,8 @@ void checkDynamixelMotors()
     reportDynDataIdx++;
 }
 
+#ifdef ENABLE_COMMANDER
+
 void checkCommander() {
   
   if(command.ReadMsgs() > 0) {
@@ -982,6 +981,7 @@ void checkCommander() {
     } 
   }  
 }
+#endif 
 
 void setup() 
 {  
