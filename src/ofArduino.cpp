@@ -655,14 +655,28 @@ void ofArduino::processSysExData(std::vector<unsigned char> data){
 			it = data.begin();
 			it++; // skip the first byte, which is the Commander command
 
-			_commanderData._walkV = (signed char) getByteFromDataIterator(it, data.end());
-			_commanderData._walkH = (signed char) getByteFromDataIterator(it, data.end());
-			_commanderData._lookV = (signed char) getByteFromDataIterator(it, data.end());
-			_commanderData._lookH = (signed char) getByteFromDataIterator(it, data.end());
-			_commanderData._buttons = (signed char) getByteFromDataIterator(it, data.end());
-			//_commanderData._ext = (signed char) getByteFromDataIterator(it, data.end());
+			if(data.size() == COMMANDER_DATA_LENGTH)
+			{
+				signed char iWalkV = (signed char) getByteFromDataIterator(it, data.end());
+				signed char iWalkH = (signed char) getByteFromDataIterator(it, data.end());
+				signed char iLookV = (signed char) getByteFromDataIterator(it, data.end());
+				signed char iLookH = (signed char) getByteFromDataIterator(it, data.end());
+				signed char iButtons = (signed char) getByteFromDataIterator(it, data.end());
+				iRecChecksum = getByteFromDataIterator(it, data.end());
+				iChecksum = (~(iWalkV + iWalkH + iLookV + iLookH + iButtons)) & 0xFF;
 
-			ECommanderDataReceived(iID);
+				if(iChecksum == iRecChecksum)
+				{
+					_commanderData._walkV = iWalkV;
+					_commanderData._walkH = iWalkH;
+					_commanderData._lookV = iLookV;
+					_commanderData._lookH = iLookH;
+					_commanderData._buttons = iButtons;
+					//_commanderData._ext = (signed char) getByteFromDataIterator(it, data.end());
+			
+				ECommanderDataReceived(iID);
+				}
+			}
 		break;
 		default: // the message isn't in Firmatas extended command set
 			_sysExHistory.push_front(data);

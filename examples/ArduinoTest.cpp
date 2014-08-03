@@ -138,10 +138,11 @@ void ArduinoTest::commanderChanged(const int & pinNum)
  //   // value to the screen each time it changes
 	//int iVal = this->getAnalog(pinNum);
     std::cout << "Commander changed: buttons" << this->_commanderData._buttons << 
-		" walkV " << this->_commanderData._walkV <<
-		" walkH " << this->_commanderData._walkH <<
-		" lookV " << this->_commanderData._lookV <<
-		" lookH " << this->_commanderData._lookH << "\r\n";
+		" walkV " << (int) this->_commanderData._walkV <<
+		" walkH " << (int) this->_commanderData._walkH <<
+		" lookV " << (int) this->_commanderData._lookV <<
+		" lookH " << (int) this->_commanderData._lookH <<
+		" buttons " << (int) this->_commanderData._buttons << "\r\n";
 }
 
 //dynamixel event handler, called whenever a dynamixel update occurs

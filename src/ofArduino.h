@@ -87,7 +87,7 @@
 #define MAX_DYNAMIXEL_SERVOS							30
 #define DYNAMIXEL_KEY_DATA_LENGTH						6*2+1
 #define DYNAMIXEL_ALL_DATA_LENGTH						10*2+1
-#define COMMANDER_DATA_LENGTH							9*2+1
+#define COMMANDER_DATA_LENGTH							6*2+1
 
 #define SYSEX_DYNAMIXEL_KEY_SERVO_DATA                      0x68 // Data packet of key (pos, speed) Dynamixel data.
 #define SYSEX_DYNAMIXEL_ALL_SERVO_DATA                      0x67 // Data packet of all (pos, speed, load, voltage, temp) Dynamixel data.

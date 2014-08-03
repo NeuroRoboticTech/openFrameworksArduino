@@ -67,4 +67,26 @@ class CommanderSS
 	
 };
 
+class CommanderData
+{
+public:
+	bool dataChanged;
+    signed char walkV;      // vertical stick movement = forward speed
+    signed char walkH;      // horizontal stick movement = sideways or angular speed
+    signed char lookV;      // vertical stick movement = tilt    
+    signed char lookH;      // horizontal stick movement = pan (when we run out of pan, turn body?)
+    unsigned char buttons;  // 
+    unsigned char ext;      // Extended function set
+
+	CommanderData() {
+		dataChanged = false;
+		walkV = 0;
+		walkH = 0;
+		lookV = 0;
+		lookH = 0;
+		buttons = 0;
+		ext = 0;
+	}
+};
+
 #endif
