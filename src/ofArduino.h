@@ -457,6 +457,8 @@ class ARDUINO_PORT ofArduino{
 				//Transmits the command to get a byte of the servo register.
 				void sendDynamixelGetRegister(unsigned char servo, unsigned char reg, unsigned char length);
 
+				bool waitForSysExMessage(unsigned char cmd, unsigned int timeout_sec = 1);
+
 		protected:
 				bool _initialized;
     
@@ -477,6 +479,8 @@ class ARDUINO_PORT ofArduino{
 				void processData(unsigned char inputData);
 				void processDigitalPort(int port, unsigned char value);
 				virtual void processSysExData(std::vector<unsigned char> data);
+
+				virtual void checkIncomingSysExMessage(unsigned char cmd);
 
 				ofSerial _port;
 				int _portStatus;
@@ -545,6 +549,12 @@ class ARDUINO_PORT ofArduino{
 
 				//Keeps track of how many synch move adds have been added since last execute or start
 				int _dynamixelMoveAdds;
+
+				//A specific SysEx message we are waiting on. -1 if not waiting.
+				int _waitingForSysExMessage;
+
+				//set to true when the message we are waiting on is found. false otherwise
+				bool _sysExMessageFound;
 };
 
 typedef ofArduino ofStandardFirmata;

@@ -62,6 +62,9 @@ ofArduino::ofArduino(){
 
 	bUseDelay = true;
 	_dynamixelMoveAdds = 0;
+
+	_waitingForSysExMessage = -1;
+	_sysExMessageFound = false;
 }
 
 ofArduino::~ofArduino() {
@@ -312,6 +315,7 @@ void ofArduino::sendFirmwareVersionRequest(){
 }
 
 void ofArduino::sendReset(){
+	_port.flush();
 	sendByte(FIRMATA_SYSTEM_RESET);
 }
 
@@ -548,6 +552,8 @@ void ofArduino::processSysExData(std::vector<unsigned char> data){
                 
             }
 
+			checkIncomingSysExMessage(FIRMATA_SYSEX_REPORT_FIRMWARE);
+
 		break;
 		case FIRMATA_SYSEX_FIRMATA_STRING:
 			it = data.begin();
@@ -565,6 +571,8 @@ void ofArduino::processSysExData(std::vector<unsigned char> data){
 					_stringHistory.pop_back();
 
 			EStringReceived(str);
+
+			checkIncomingSysExMessage(FIRMATA_SYSEX_FIRMATA_STRING);
 		break;
 		case SYSEX_DYNAMIXEL_KEY_SERVO_DATA:
 			it = data.begin();
@@ -592,6 +600,7 @@ void ofArduino::processSysExData(std::vector<unsigned char> data){
 					_dynamixelServos[iID]._actualSpeed = iSpeed;
 
 					EDynamixelKeyReceived(iID);
+					checkIncomingSysExMessage(SYSEX_DYNAMIXEL_KEY_SERVO_DATA);
 				}
 			}
 		break;
@@ -633,6 +642,7 @@ void ofArduino::processSysExData(std::vector<unsigned char> data){
 					_dynamixelServos[iID]._temperature = cTemp;
 
 					EDynamixelAllReceived(iID);
+					checkIncomingSysExMessage(SYSEX_DYNAMIXEL_ALL_SERVO_DATA);
 				}
 			}
 		break;
@@ -652,8 +662,10 @@ void ofArduino::processSysExData(std::vector<unsigned char> data){
 			//Get the servo ID number
 			iChecksum = (~(iCmd + iID)) & 0xFF;
 
-			if(iChecksum == iRecChecksum)
+			if(iChecksum == iRecChecksum) {
 				EDynamixelTransmitError(iCmd, iID);
+				checkIncomingSysExMessage(SYSEX_DYNAMIXEL_TRANSMIT_ERROR);
+			}
 		break;
 		case SYSEX_DYNAMIXEL_GET_REGISTER:
 			if(data.size() == DYNAMIXEL_GET_REGISTER_LENGTH) {
@@ -675,8 +687,10 @@ void ofArduino::processSysExData(std::vector<unsigned char> data){
 				//Get the servo ID number
 				iChecksum = (~(iID + iReg + iValue)) & 0xFF;
 
-				if(iChecksum == iRecChecksum)
+				if(iChecksum == iRecChecksum) {
 					EDynamixelGetRegister(iID, iReg, iValue);
+					checkIncomingSysExMessage(SYSEX_DYNAMIXEL_GET_REGISTER);
+				}
 			}
 		break;
 		case SYSEX_COMMANDER_DATA:
@@ -703,7 +717,8 @@ void ofArduino::processSysExData(std::vector<unsigned char> data){
 					_commanderData._buttons = iButtons;
 					//_commanderData._ext = (signed char) getByteFromDataIterator(it, data.end());
 			
-				ECommanderDataReceived(iID);
+					ECommanderDataReceived(iID);
+					checkIncomingSysExMessage(SYSEX_COMMANDER_DATA);
 				}
 			}
 		break;
@@ -1106,4 +1121,29 @@ void ofArduino::sendDynamixelGetRegister(unsigned char servo, unsigned char reg,
 	sysexData.push_back(length);
 	sysexData.push_back(checksum);
 	this->sendSysEx(SYSEX_DYNAMIXEL_GET_REGISTER, sysexData);
+}
+
+void ofArduino::checkIncomingSysExMessage(unsigned char cmd) {
+	if(_waitingForSysExMessage >= 0 && _waitingForSysExMessage == cmd)
+		_sysExMessageFound = true;
+}
+
+bool ofArduino::waitForSysExMessage(unsigned char cmd, unsigned int timeout_sec) {
+	_waitingForSysExMessage = cmd;
+	_sysExMessageFound = false;
+	boost::timer _Timer;
+
+	//Process messages until we find the message we are waiting on or we timeout
+	while(!_sysExMessageFound) {
+
+		//Check if we need to timeout
+		if(timeout_sec> 0 && _Timer.elapsed()> timeout_sec)
+			return false;
+
+		update(); 
+	}
+
+	_waitingForSysExMessage = -1;
+	_sysExMessageFound = false;
+	return true;
 }

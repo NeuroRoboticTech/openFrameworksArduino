@@ -872,6 +872,10 @@ void systemResetCallback()
       reportDynData[i].data[j] = -1;
   }
 
+#ifdef DEBUG_SERIAL
+  commanderSerial.println("Called reset: ");
+#endif
+
 #ifdef ENABLE_COMMANDER
   //Setup command data with bad values at the start so as soon as we get an incoming packet it will 
   //not match the default positions and need to send the first packet.

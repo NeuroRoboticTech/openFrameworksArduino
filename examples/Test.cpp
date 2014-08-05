@@ -15,6 +15,7 @@ int main(int argc, char** argv)
 	//Need to do this to init the pins, get the firmware version, and  call setupArduino.
 	//Will stay in update loop looking for signal. When it arrives Setup will be called
 	//and we can start processing.
+	ard.sendReset();
 	ard.sendFirmwareVersionRequest();
 
 	for(int i=0; i<1000000; i++, iMotorCount++)
