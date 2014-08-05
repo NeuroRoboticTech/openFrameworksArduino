@@ -87,6 +87,10 @@ void ArduinoTest::setupArduino(const int & version)
 	//Wait for a second.
 	boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
 
+	//Set the CW and CCW limits to be in a valid range for this test
+	this->sendDynamixelSetRegister(3, 0x06, 2, 170);
+	this->sendDynamixelSetRegister(3, 0x08, 2, 800);
+
 	//Get the motor moving slowly over to the side
 	this->sendDynamixelSynchMoveAdd(1, 650, 0);
 	this->sendDynamixelSynchMoveAdd(2, 650, 0);
@@ -94,12 +98,16 @@ void ArduinoTest::setupArduino(const int & version)
 	this->sendDynamixelSynchMoveExecute();
 	m_bSwingLeg = true;
 
+	this->sendDynamixelGetRegister(3, 0x08, 2);
+
     // Listen for changes on the digital and analog pins
 	m_EDigitalPinChanged = this->EDigitalPinChanged.connect(boost::bind(&ArduinoTest::digitalPinChanged, this, _1));
 	m_EAnalogPinChanged = this->EAnalogPinChanged.connect(boost::bind(&ArduinoTest::analogPinChanged, this, _1));
 	m_ECommanderChanged = this->ECommanderDataReceived.connect(boost::bind(&ArduinoTest::commanderChanged, this, _1));
-	m_EDynamixelReceived = this->EDynamixelReceived.connect(boost::bind(&ArduinoTest::dynamixelRecieved, this, _1));
+	m_EDynamixelKeyReceived = this->EDynamixelKeyReceived.connect(boost::bind(&ArduinoTest::dynamixelRecieved, this, _1));
+	m_EDynamixelAllReceived = this->EDynamixelAllReceived.connect(boost::bind(&ArduinoTest::dynamixelRecieved, this, _1));
 	m_EDynamixelTransmitError = this->EDynamixelTransmitError.connect(boost::bind(&ArduinoTest::dynamixelTransmitError, this, _1, _2));
+	m_EDynamixelGetRegister = this->EDynamixelGetRegister.connect(boost::bind(&ArduinoTest::dynamixelGetRegister, this, _1, _2, _3));
 }
 
 
@@ -173,8 +181,11 @@ void ArduinoTest::dynamixelRecieved(const int & servo)
 
  //   // do something with the analog input. here we're simply going to print the pin number and
  //   // value to the screen each time it changes
-	//int iVal = this->getAnalog(pinNum);
-    //std::cout << "servo: " << servo << ", Pos: " << _dynamixelServos[servo]._actualPosition << ", speed: " << _dynamixelServos[servo]._actualSpeed << "\r\n";
+	//if(servo == 3)
+	//    std::cout << "servo: " << servo << ", Pos: " << _dynamixelServos[servo]._actualPosition << ", swing: " << m_bSwingLeg  << "\r\n";
+
+	_dynamixelServos[servo]._keyChanged = false;
+	_dynamixelServos[servo]._allChanged = false;
 
 	if(	m_bSwingLeg && servo == 3 && _dynamixelServos[servo]._actualPosition <= (185))
 	{
@@ -207,4 +218,9 @@ void ArduinoTest::dynamixelRecieved(const int & servo)
 void ArduinoTest::dynamixelTransmitError(const int & cmd, const int & servoNum) {
 
 	std::cout << "Transmit error Cmd: " << cmd << ", servo: " << servoNum << "\r\n";
+}
+
+void ArduinoTest::dynamixelGetRegister(const unsigned char &servo, const unsigned char &reg, const unsigned int &value) {
+
+	std::cout << "Get Register Servo: " << servo << ", reg: " << reg << ", value: " << value << "\r\n";
 }

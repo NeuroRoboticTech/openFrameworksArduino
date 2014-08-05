@@ -87,6 +87,7 @@
 #define MAX_DYNAMIXEL_SERVOS							30
 #define DYNAMIXEL_KEY_DATA_LENGTH						6*2+1
 #define DYNAMIXEL_ALL_DATA_LENGTH						10*2+1
+#define DYNAMIXEL_GET_REGISTER_LENGTH					5*2+1
 #define COMMANDER_DATA_LENGTH							6*2+1
 
 #define SYSEX_DYNAMIXEL_KEY_SERVO_DATA                      0x68 // Data packet of key (pos, speed) Dynamixel data.
@@ -96,9 +97,10 @@
 #define SYSEX_DYNAMIXEL_SYNCH_MOVE_ADD						0x64 // Data packet to configure up to 5 motors to move using synch move command.
 #define SYSEX_DYNAMIXEL_SYNCH_MOVE_EXECUTE					0x63 // Data packet to configure up to 5 motors to move using synch move command.
 #define SYSEX_DYNAMIXEL_MOVE								0x62 // Data packet to send immediate move command.
-#define SYSEX_DYNAMIXEL_TRANSMIT_ERROR						0x61 // Data packet to for when there is a transmission error detected on the arbotix side.
-#define SYSEX_DYNAMIXEL_ERROR								0x60 // Data packet to for when there is an error with one of the dynamixel servos.
-#define SYSEX_COMMANDER_DATA		                        0x59 // Data packet with commander remote control buttons pressed.
+#define SYSEX_DYNAMIXEL_TRANSMIT_ERROR						0x61 // Data packet for when there is a transmission error detected on the arbotix side.
+#define SYSEX_DYNAMIXEL_SET_REGISTER						0x60 // Data packet to set a specific register in a Dynamixel servo.
+#define SYSEX_DYNAMIXEL_GET_REGISTER						0x59 // Data packet to get a specific register in a Dynamixel servo.
+#define SYSEX_COMMANDER_DATA		                        0x58 // Data packet with commander remote control buttons pressed.
 
 // ---- arduino constants (for Arduino NG and Diecimila)
 
@@ -160,6 +162,8 @@
 
 class ARDUINO_PORT ofDynamixelData {
 public:
+	bool _keyChanged;
+	bool _allChanged;
 	unsigned int _id;
 	unsigned int _goalPosition;
 	unsigned int _actualPosition;
@@ -171,6 +175,8 @@ public:
 
 	ofDynamixelData()
 	{
+		_keyChanged = false;
+		_allChanged = false;
 		_id = 0;
 		_goalPosition = 0;
 		_actualPosition = 0;
@@ -184,6 +190,7 @@ public:
 
 class ARDUINO_PORT ofCommanderData {
 public:
+	bool _changed;
 	signed char _walkV;
 	signed char _walkH;
 	signed char _lookV;
@@ -193,6 +200,7 @@ public:
 
 	ofCommanderData()
 	{
+		_changed = false;
 		_walkV = 0;
 		_walkH = 0;
 		_lookV = 0;
@@ -390,11 +398,17 @@ class ARDUINO_PORT ofArduino{
 				boost::signals2::signal<void (const std::string)> EStringReceived;
 				// triggered when a string is received, the string is passed as an argument
 
-				boost::signals2::signal<void (const int)> EDynamixelReceived;
+				boost::signals2::signal<void (const int)> EDynamixelAllReceived;
+				// triggered when a dynamixel data update packet is received, the servo ID is passed as an argument
+
+				boost::signals2::signal<void (const int)> EDynamixelKeyReceived;
 				// triggered when a dynamixel data update packet is received, the servo ID is passed as an argument
 
 				boost::signals2::signal<void (const int, const int)> EDynamixelTransmitError;
 				// triggered when the arbotix gets a transmission error like an invalid checksum
+
+				boost::signals2::signal<void (const unsigned char, const unsigned char, const unsigned int)> EDynamixelGetRegister;
+				// triggered when the arbotix sends back a register value from one of the Dynamixel motors.
 				
 				boost::signals2::signal<void (const int)> ECommanderDataReceived;
 				// triggered when a commander data update packet is received, the servo ID is passed as an argument
@@ -435,7 +449,13 @@ class ARDUINO_PORT ofArduino{
 				void sendDynamixelSynchMoveExecute();
 
 				//Transmits the command to move a single motor. Does not use the synch move.
-				void ofArduino::sendDynamixelMove(unsigned char servo, int pos, int speed);
+				void sendDynamixelMove(unsigned char servo, int pos, int speed);
+
+				//Transmits the command to set a byte of the servo register.
+				void sendDynamixelSetRegister(unsigned char servo, unsigned char reg, unsigned char length, unsigned int value);
+
+				//Transmits the command to get a byte of the servo register.
+				void sendDynamixelGetRegister(unsigned char servo, unsigned char reg, unsigned char length);
 
 		protected:
 				bool _initialized;
@@ -522,6 +542,9 @@ class ARDUINO_PORT ofArduino{
                 // the last set servo values
 
 				boost::timer _Timer;
+
+				//Keeps track of how many synch move adds have been added since last execute or start
+				int _dynamixelMoveAdds;
 };
 
 typedef ofArduino ofStandardFirmata;

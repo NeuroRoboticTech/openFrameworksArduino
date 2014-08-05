@@ -36,8 +36,10 @@ protected:
 	boost::signals2::connection m_EDigitalPinChanged;
 	boost::signals2::connection m_EAnalogPinChanged;
 	boost::signals2::connection m_ECommanderChanged;
-	boost::signals2::connection m_EDynamixelReceived;
+	boost::signals2::connection m_EDynamixelKeyReceived;
+	boost::signals2::connection m_EDynamixelAllReceived;
 	boost::signals2::connection m_EDynamixelTransmitError;
+	boost::signals2::connection m_EDynamixelGetRegister;
 
 	bool m_bSwingLeg;
 
@@ -46,6 +48,7 @@ protected:
 	void commanderChanged(const int & pinNum);
 	void dynamixelRecieved(const int & servoNum);
 	void dynamixelTransmitError(const int & cmd, const int & servoNum);
+	void dynamixelGetRegister(const unsigned char &servo, const unsigned char &reg, const unsigned int &value);
 
 #ifdef INCLUDE_TIMING
 	unsigned long long m_lStartTick;
