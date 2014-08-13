@@ -191,7 +191,7 @@ int ofArduino::getAnalog(int pin){
 }
 
 int ofArduino::getDigital(int pin){
-	if(_digitalPinMode[pin]==ARD_INPUT && _digitalHistory[pin].size()>0)
+	if((_digitalPinMode[pin]==ARD_INPUT || _digitalPinMode[pin]==ARD_INPUT_PULLUP) && _digitalHistory[pin].size()>0)
 		return _digitalHistory[pin].front();
 	else if (_digitalPinMode[pin]==ARD_OUTPUT)
 		return _digitalPinValue[pin];
@@ -219,7 +219,7 @@ int ofArduino::getDigitalPinMode(int pin){
 }
 
 void ofArduino::sendDigital(int pin, int value, bool force){
-	if((_digitalPinMode[pin]==ARD_INPUT || _digitalPinMode[pin]==ARD_OUTPUT) && (_digitalPinValue[pin]!=value || force)){
+	if((_digitalPinMode[pin]==ARD_INPUT || _digitalPinMode[pin]==ARD_INPUT_PULLUP || _digitalPinMode[pin]==ARD_OUTPUT) && (_digitalPinValue[pin]!=value || force)){
 
 		_digitalPinValue[pin] = value;
 
@@ -349,7 +349,7 @@ void ofArduino::sendDigitalPinMode(int pin, int mode){
 	_digitalPinMode[pin]=mode;
 
 	// turn on or off reporting on the port
-	if(mode==ARD_INPUT){
+	if(mode==ARD_INPUT || mode==ARD_INPUT_PULLUP){
 		sendDigitalPinReporting(pin, ARD_ON);
 	}
 	else {
@@ -755,7 +755,7 @@ void ofArduino::processDigitalPort(int port, unsigned char value){
         for(i=2; i<8; ++i) {
             pin = i;
             previous = -1;
-            if(_digitalPinMode[pin]==ARD_INPUT){
+            if(_digitalPinMode[pin]==ARD_INPUT || _digitalPinMode[pin]==ARD_INPUT_PULLUP){
               if (_digitalHistory[pin].size() > 0)
                 previous = _digitalHistory[pin].front();
 
@@ -776,7 +776,7 @@ void ofArduino::processDigitalPort(int port, unsigned char value){
         for(i=0; i<port1Pins; ++i) {
             pin = i+8;
             previous = -1;
-            if(_digitalPinMode[pin]==ARD_INPUT){
+            if(_digitalPinMode[pin]==ARD_INPUT || _digitalPinMode[pin]==ARD_INPUT_PULLUP){
               if (_digitalHistory[pin].size() > 0)
                 previous = _digitalHistory[pin].front();
 
@@ -798,7 +798,7 @@ void ofArduino::processDigitalPort(int port, unsigned char value){
 			//pin = i+analogOffset;
             pin = i+16;
 			      previous = -1;
-            if(_digitalPinMode[pin]==ARD_INPUT){
+            if(_digitalPinMode[pin]==ARD_INPUT || _digitalPinMode[pin]==ARD_INPUT_PULLUP){
               if (_digitalHistory[pin].size() > 0)
                 previous = _digitalHistory[pin].front();
 

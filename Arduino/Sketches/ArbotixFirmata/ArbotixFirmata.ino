@@ -264,7 +264,7 @@ void setPinModeCallback(byte pin, int mode)
     reportAnalogCallback(PIN_TO_ANALOG(pin), mode == ANALOG ? 1 : 0); // turn on/off reporting
   }
   if (IS_PIN_DIGITAL(pin)) {
-    if (mode == INPUT) {
+    if (mode == INPUT || mode == INPUT_PULLUP) {
       portConfigInputs[pin/8] |= (1 << (pin & 7));
     } else {
       portConfigInputs[pin/8] &= ~(1 << (pin & 7));
@@ -315,6 +315,13 @@ void setPinModeCallback(byte pin, int mode)
       // mark the pin as i2c
       // the user must call I2C_CONFIG to enable I2C for a device
       pinConfig[pin] = I2C;
+    }
+    break;
+  case INPUT_PULLUP:
+    if (IS_PIN_DIGITAL(pin)) {
+      pinMode(PIN_TO_DIGITAL(pin), INPUT); // disable output driver
+      digitalWrite(PIN_TO_DIGITAL(pin), HIGH); // enable internal pull-ups
+      pinConfig[pin] = INPUT_PULLUP;
     }
     break;
   default:
@@ -1076,7 +1083,7 @@ void setup()
   Firmata.attach(START_SYSEX, sysexCallback);
   Firmata.attach(SYSTEM_RESET, systemResetCallback);
 
-  Firmata.begin(256000);
+  Firmata.begin(57600); //256000
   systemResetCallback();  // reset to default config
 
 #ifdef ENABLE_COMMANDER

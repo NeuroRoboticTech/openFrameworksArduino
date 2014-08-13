@@ -1,5 +1,9 @@
 /*
  * Copyright 2007-2008 (c) Erik Sjodin, eriksjodin.net
+ * Adapted from Wiring version 2011 (c) Carlos Mario Rodriguez and 
+ * Hernando Barragan by Dominic Amato
+ * Adapted from Arbotix Firmata version 2014 (c) David Cofer 
+ * NeuroRoboticTechnologies, LLC
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -63,7 +67,8 @@
 #define FIRMATA_SERVO                                   0x04 // digital pin in Servo output mode
 #define SHIFT											0x05 // shiftIn/shiftOut mode
 #define I2C												0x06 // pin included in I2C setup
-#define TOTAL_PIN_MODES 7 
+#define FIRMATA_INPUT_PULLUP							0x07 // pull-up resistors enabled
+#define TOTAL_PIN_MODES 8 
 // extended command set using SysEx (0-127/0x00-0x7F)
 /* 0x00-0x0F reserved for custom commands */
 #define FIRMATA_SYSEX_SERVO_CONFIG                      0x70 // set max angle, minPulse, maxPulse, freq
@@ -114,6 +119,7 @@
 #define ARD_ANALOG                                      0x02 // analog pin in analogInput mode
 #define ARD_PWM                                         0x03 // digital pin in PWM output mode
 #define ARD_SERVO                                       0x04 // digital pin in Servo output mode
+#define ARD_INPUT_PULLUP                                0x07 // pull-up rsistors enabled
 #define ARD_HIGH                                        1
 #define ARD_LOW                                         0
 #define ARD_ON                                          1
@@ -148,7 +154,7 @@
 #define SYSEX_SERVO_DETACH                      0x01
 #define SYSEX_SERVO_WRITE                       0x02
 
-#define OF_ARDUINO_DELAY_LENGTH					4.0
+#define OF_ARDUINO_DELAY_LENGTH					10.0
 
 #define FIRMWARE2_2								22
 #define FIRMWARE2_3                             23
