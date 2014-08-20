@@ -71,7 +71,7 @@
 
 #ifdef ENABLE_COMMANDER
   //If defined then it setups an additional serial debug port to use.
-  #define DEBUG_SERIAL 1
+  //#define DEBUG_SERIAL 1
   //#define DEBUG_RX_PIN 2	 
   //#define DEBUG_TX_PIN 3
 #endif
@@ -674,10 +674,10 @@ void sysexCallback(byte command, byte argc, byte *argv)
       reportDynServos[servo] = report;
 
 #ifdef DEBUG_SERIAL
-      //commanderSerial.println("Recieved Dynamixel Config");  
-      //commanderSerial.print(", Servo: "); commanderSerial.print(servo);
-      //commanderSerial.print(", Report: "); commanderSerial.print(report);
-      //commanderSerial.print ("\n");
+      commanderSerial.println("Recieved Dynamixel Config");  
+      commanderSerial.print(", Servo: "); commanderSerial.print(servo);
+      commanderSerial.print(", Report: "); commanderSerial.print(report);
+      commanderSerial.print ("\n");
 #endif
     }
     break;
@@ -706,14 +706,14 @@ void sysexCallback(byte command, byte argc, byte *argv)
         sendDynamixelTransmitError(SYSEX_DYNAMIXEL_SYNCH_MOVE_ADD, servo);
       
 #ifdef DEBUG_SERIAL
-      //commanderSerial.println("Recieved Dynamixel synch move add");  
-      //commanderSerial.print(",count: "); commanderSerial.print(totalSynchServos);
-      //commanderSerial.print(",servo: "); commanderSerial.print(servo);
-      //commanderSerial.print(", pos: "); commanderSerial.print(pos);
-      //commanderSerial.print(", speed: "); commanderSerial.print(speed);
-      //commanderSerial.print(", rec checksum: "); commanderSerial.print(recChecksum);
-      //commanderSerial.print(", checksum: "); commanderSerial.print(checksum);
-      //commanderSerial.print ("\n");
+      commanderSerial.println("Recieved Dynamixel synch move add");  
+      commanderSerial.print(",count: "); commanderSerial.print(totalSynchServos);
+      commanderSerial.print(",servo: "); commanderSerial.print(servo);
+      commanderSerial.print(", pos: "); commanderSerial.print(pos);
+      commanderSerial.print(", speed: "); commanderSerial.print(speed);
+      commanderSerial.print(", rec checksum: "); commanderSerial.print(recChecksum);
+      commanderSerial.print(", checksum: "); commanderSerial.print(checksum);
+      commanderSerial.print ("\n");
 #endif
     }
     break;
@@ -739,19 +739,20 @@ void sysexCallback(byte command, byte argc, byte *argv)
       if(recChecksum == checksum)  
       {
         SetSpeed(servo, speed);
+        delay(10);
         SetPosition(servo, pos);
       }
       else
         sendDynamixelTransmitError(SYSEX_DYNAMIXEL_MOVE, servo);
     
 #ifdef DEBUG_SERIAL
-      //commanderSerial.println("Recieved Dynamixel move ");  
-      //commanderSerial.print(", servo: "); commanderSerial.print(servo);
-      //commanderSerial.print(", pos: "); commanderSerial.print(pos);
-      //commanderSerial.print(", speed: "); commanderSerial.print(speed);
-      //commanderSerial.print(", rec checksum: "); commanderSerial.print(recChecksum);
-      //commanderSerial.print(", checksum: "); commanderSerial.print(checksum);
-      //commanderSerial.print ("\n");
+      commanderSerial.println("Recieved Dynamixel move ");  
+      commanderSerial.print(", servo: "); commanderSerial.print(servo);
+      commanderSerial.print(", pos: "); commanderSerial.print(pos);
+      commanderSerial.print(", speed: "); commanderSerial.print(speed);
+      commanderSerial.print(", rec checksum: "); commanderSerial.print(recChecksum);
+      commanderSerial.print(", checksum: "); commanderSerial.print(checksum);
+      commanderSerial.print ("\n");
 #endif
     }
     break;
@@ -765,7 +766,7 @@ void sysexCallback(byte command, byte argc, byte *argv)
       int value = ax12MakeWord(value0, value1);
         
       byte recChecksum = argv[10] + (argv[11] << 7);
-      int checksum = (~(servo + reg + length + value)) & 0xFF;
+      int checksum = (~(servo + reg + length + value0 + value1)) & 0xFF;
 
       if(recChecksum == checksum) {
         if(length == 1) 
@@ -1083,7 +1084,7 @@ void setup()
   Firmata.attach(START_SYSEX, sysexCallback);
   Firmata.attach(SYSTEM_RESET, systemResetCallback);
 
-  Firmata.begin(57600); //256000
+  Firmata.begin(256000); //57600
   systemResetCallback();  // reset to default config
 
 #ifdef ENABLE_COMMANDER

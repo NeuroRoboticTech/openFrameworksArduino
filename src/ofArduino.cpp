@@ -1097,7 +1097,7 @@ void ofArduino::sendDynamixelMove(unsigned char servo, int pos, int speed) {
 void ofArduino::sendDynamixelSetRegister(unsigned char servo, unsigned char reg, unsigned char length, unsigned int value) {
 	unsigned char val0 = getLowByte(value);
 	unsigned char val1 = getHighByte(value);
-	int checksum = (~(servo + reg + length + value)) & 0xFF;
+	int checksum = (~(servo + reg + length + val0 + val1)) & 0xFF;
 
 	//Send a sysex to let the arbotix know that we are starting a new synch move command
 	std::vector<unsigned char> sysexData;

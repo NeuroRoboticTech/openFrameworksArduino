@@ -42,7 +42,7 @@ void ArduinoTest::setupArduino(const int & version)
     //this->sendDigitalPinMode(2, ARD_INPUT);
 
     // set pin A0 to analog input
-    //this->sendAnalogPinReporting(0, ARD_ANALOG);
+    //this->sendAnalogPinReporting(1, ARD_ANALOG);
     
     // set pin D13 as digital output
 	//this->sendDigitalPinMode(13, ARD_OUTPUT);
@@ -139,7 +139,7 @@ void ArduinoTest::analogPinChanged(const int & pinNum)
     // do something with the analog input. here we're simply going to print the pin number and
     // value to the screen each time it changes
 	int iVal = this->getAnalog(pinNum);
-    //std::cout << "analog pin: " << pinNum << " = " << iVal << "\r\n";
+    std::cout << "analog pin: " << pinNum << " = " << iVal << "\r\n";
 }
 
 //commander event handler, called whenever a commander button value has changed
@@ -199,7 +199,7 @@ void ArduinoTest::dynamixelRecieved(const int & servo)
 		this->sendDynamixelSynchMoveAdd(2, 512, 0);
 		this->sendDynamixelSynchMoveAdd(3, 800, 0);
 		this->sendDynamixelSynchMoveExecute();
-	    //std::cout << "Swing\r\n";
+	    std::cout << "Swing\r\n";
 	}
 	else if(!m_bSwingLeg && servo == 3 && _dynamixelServos[servo]._actualPosition >= (795))
 	{
@@ -208,7 +208,7 @@ void ArduinoTest::dynamixelRecieved(const int & servo)
 		this->sendDynamixelSynchMoveAdd(2, 650, 0);
 		this->sendDynamixelSynchMoveAdd(3, 180, 0);
 		this->sendDynamixelSynchMoveExecute();
-	    //std::cout << "Stance\r\n";
+	    std::cout << "Stance\r\n";
 	}
 
 	//this->sendDynamixelServoDetach(servo);
