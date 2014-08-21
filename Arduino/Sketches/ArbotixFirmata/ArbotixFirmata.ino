@@ -71,7 +71,7 @@
 
 #ifdef ENABLE_COMMANDER
   //If defined then it setups an additional serial debug port to use.
-  //#define DEBUG_SERIAL 1
+  #define DEBUG_SERIAL 1
   //#define DEBUG_RX_PIN 2	 
   //#define DEBUG_TX_PIN 3
 #endif
@@ -442,11 +442,11 @@ void sendDynamixelTransmitError(byte command, byte servo) {
   aryCustomSysEx[2] = checksum;
 
 #ifdef DEBUG_SERIAL
-  //commanderSerial.println("Sending transmit error");  
-  //commanderSerial.print("cmd: "); commanderSerial.print(command);
-  //commanderSerial.print(", servo: "); commanderSerial.print(servo);
-  //commanderSerial.print(", checksum: "); commanderSerial.print(checksum);
-  //commanderSerial.print ("\n");
+  commanderSerial.println("Sending transmit error");  
+  commanderSerial.print("cmd: "); commanderSerial.print(command);
+  commanderSerial.print(", servo: "); commanderSerial.print(servo);
+  commanderSerial.print(", checksum: "); commanderSerial.print(checksum);
+  commanderSerial.print ("\n");
 #endif
 
   // send Dynamixel error data
@@ -706,14 +706,14 @@ void sysexCallback(byte command, byte argc, byte *argv)
         sendDynamixelTransmitError(SYSEX_DYNAMIXEL_SYNCH_MOVE_ADD, servo);
       
 #ifdef DEBUG_SERIAL
-      commanderSerial.println("Recieved Dynamixel synch move add");  
-      commanderSerial.print(",count: "); commanderSerial.print(totalSynchServos);
-      commanderSerial.print(",servo: "); commanderSerial.print(servo);
-      commanderSerial.print(", pos: "); commanderSerial.print(pos);
-      commanderSerial.print(", speed: "); commanderSerial.print(speed);
-      commanderSerial.print(", rec checksum: "); commanderSerial.print(recChecksum);
-      commanderSerial.print(", checksum: "); commanderSerial.print(checksum);
-      commanderSerial.print ("\n");
+      //commanderSerial.println("Recieved Dynamixel synch move add");  
+      //commanderSerial.print(",count: "); commanderSerial.print(totalSynchServos);
+      //commanderSerial.print(",servo: "); commanderSerial.print(servo);
+      //commanderSerial.print(", pos: "); commanderSerial.print(pos);
+      //commanderSerial.print(", speed: "); commanderSerial.print(speed);
+      //commanderSerial.print(", rec checksum: "); commanderSerial.print(recChecksum);
+      //commanderSerial.print(", checksum: "); commanderSerial.print(checksum);
+      //commanderSerial.print ("\n");
 #endif
     }
     break;
