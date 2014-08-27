@@ -14,7 +14,7 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/thread/thread.hpp>
 
-#define INCLUDE_TIMING
+//#define INCLUDE_TIMING
 
 #ifdef INCLUDE_TIMING
 	//Include the timer code and openthreads code from osg
