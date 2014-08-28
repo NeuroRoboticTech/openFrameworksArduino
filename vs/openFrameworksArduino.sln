@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "openFrameworksArduino", "openFrameworksArduino.vcxproj", "{2099A93E-4017-DF4C-B9A9-A9B8A315C91A}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "openFrameworksArduino", "openFrameworksArduino.vcxproj", "{F2D197B3-FA93-024B-AF56-68490A1E4EAC}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ArduinoTest", "ArduinoTest.vcxproj", "{CD181B41-4851-5445-B10F-D1959152D55C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ArduinoTest", "ArduinoTest.vcxproj", "{A06255B5-34BF-EC4B-9C6E-862E5EC87E2B}"
 	ProjectSection(ProjectDependencies) = postProject
-		{2099A93E-4017-DF4C-B9A9-A9B8A315C91A} = {2099A93E-4017-DF4C-B9A9-A9B8A315C91A}
+		{F2D197B3-FA93-024B-AF56-68490A1E4EAC} = {F2D197B3-FA93-024B-AF56-68490A1E4EAC}
 	EndProjectSection
 EndProject
 Global
@@ -14,14 +14,14 @@ Global
 		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{2099A93E-4017-DF4C-B9A9-A9B8A315C91A}.Debug|Win32.ActiveCfg = Debug|Win32
-		{2099A93E-4017-DF4C-B9A9-A9B8A315C91A}.Debug|Win32.Build.0 = Debug|Win32
-		{2099A93E-4017-DF4C-B9A9-A9B8A315C91A}.Release|Win32.ActiveCfg = Release|Win32
-		{2099A93E-4017-DF4C-B9A9-A9B8A315C91A}.Release|Win32.Build.0 = Release|Win32
-		{CD181B41-4851-5445-B10F-D1959152D55C}.Debug|Win32.ActiveCfg = Debug|Win32
-		{CD181B41-4851-5445-B10F-D1959152D55C}.Debug|Win32.Build.0 = Debug|Win32
-		{CD181B41-4851-5445-B10F-D1959152D55C}.Release|Win32.ActiveCfg = Release|Win32
-		{CD181B41-4851-5445-B10F-D1959152D55C}.Release|Win32.Build.0 = Release|Win32
+		{F2D197B3-FA93-024B-AF56-68490A1E4EAC}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F2D197B3-FA93-024B-AF56-68490A1E4EAC}.Debug|Win32.Build.0 = Debug|Win32
+		{F2D197B3-FA93-024B-AF56-68490A1E4EAC}.Release|Win32.ActiveCfg = Release|Win32
+		{F2D197B3-FA93-024B-AF56-68490A1E4EAC}.Release|Win32.Build.0 = Release|Win32
+		{A06255B5-34BF-EC4B-9C6E-862E5EC87E2B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A06255B5-34BF-EC4B-9C6E-862E5EC87E2B}.Debug|Win32.Build.0 = Debug|Win32
+		{A06255B5-34BF-EC4B-9C6E-862E5EC87E2B}.Release|Win32.ActiveCfg = Release|Win32
+		{A06255B5-34BF-EC4B-9C6E-862E5EC87E2B}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -95,22 +95,28 @@ void ArduinoTest::setupArduino(const int & version)
 	this->sendDynamixelMove(3, 400, 0);
 	boost::this_thread::sleep(boost::posix_time::milliseconds(200));
 
+	//Start a move then stop it.
+	this->sendDynamixelMove(3, 700, 20);
+	boost::this_thread::sleep(boost::posix_time::milliseconds(2000));
+
+	this->sendDynamixelStop(3);
+
 	//Wait for a second.
 	boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
 
 	m_bSwingLeg = false;
-	this->sendDynamixelSynchMoveAdd(1, 512, 0);
-	this->sendDynamixelSynchMoveAdd(2, 512, 0);
-	this->sendDynamixelSynchMoveAdd(3, 512, 0);
+	this->sendDynamixelSynchMoveAdd(1, 512, 100);
+	this->sendDynamixelSynchMoveAdd(2, 512, 100);
+	this->sendDynamixelSynchMoveAdd(3, 512, 100);
 	this->sendDynamixelSynchMoveExecute();
 
 	//Wait for a second.
 	boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
 
 	//Get the motor moving slowly over to the side
-	this->sendDynamixelSynchMoveAdd(1, 650, 0);
-	this->sendDynamixelSynchMoveAdd(2, 650, 0);
-	this->sendDynamixelSynchMoveAdd(3, 180, 0);
+	this->sendDynamixelSynchMoveAdd(1, 650, 100);
+	this->sendDynamixelSynchMoveAdd(2, 650, 100);
+	this->sendDynamixelSynchMoveAdd(3, 180, 100);
 	this->sendDynamixelSynchMoveExecute();
 	m_bSwingLeg = true;
 }
@@ -195,18 +201,18 @@ void ArduinoTest::dynamixelRecieved(const int & servo)
 	if(	m_bSwingLeg && servo == 3 && _dynamixelServos[servo]._actualPosition <= (185))
 	{
 		m_bSwingLeg = false;
-		this->sendDynamixelSynchMoveAdd(1, 512, 0);
-		this->sendDynamixelSynchMoveAdd(2, 512, 0);
-		this->sendDynamixelSynchMoveAdd(3, 800, 0);
+		this->sendDynamixelSynchMoveAdd(1, 512, 100);
+		this->sendDynamixelSynchMoveAdd(2, 512, 100);
+		this->sendDynamixelSynchMoveAdd(3, 800, 100);
 		this->sendDynamixelSynchMoveExecute();
 	    std::cout << "Swing\r\n";
 	}
 	else if(!m_bSwingLeg && servo == 3 && _dynamixelServos[servo]._actualPosition >= (795))
 	{
 		m_bSwingLeg = true;
-		this->sendDynamixelSynchMoveAdd(1, 650, 0);
-		this->sendDynamixelSynchMoveAdd(2, 650, 0);
-		this->sendDynamixelSynchMoveAdd(3, 180, 0);
+		this->sendDynamixelSynchMoveAdd(1, 650, 100);
+		this->sendDynamixelSynchMoveAdd(2, 650, 100);
+		this->sendDynamixelSynchMoveAdd(3, 180, 100);
 		this->sendDynamixelSynchMoveExecute();
 	    std::cout << "Stance\r\n";
 	}

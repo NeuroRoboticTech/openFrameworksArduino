@@ -8,8 +8,8 @@ solution "openFrameworksArduino_x64"
 		kind     "SharedLib"
 		files  { "../src/*.h",
 				 "../src/*.cpp"}
-		includedirs { "../../boost_1_54_0" }	  
-		libdirs { "../../boost_1_54_0/lib_x64" }
+		includedirs { "$(BOOST_ROOT)" }	  
+		libdirs { "$(BOOST_ROOT)/lib_x64" }
 		
 		configuration { "Debug", "windows" }
 			defines { "WIN32", "_DEBUG", "_WINDOWS", "_USRDLL", "_CRT_SECURE_NO_WARNINGS" }
@@ -28,11 +28,11 @@ solution "openFrameworksArduino_x64"
 		kind     "ConsoleApp"
 		files  { "../examples/*.h",
 				 "../examples/*.cpp"}
-		includedirs { "../../boost_1_54_0",
+		includedirs { "$(BOOST_ROOT)",
 					  "../src",
-					  "../../OpenSceneGraph-3.0.1_x64/include" }	  
-		libdirs { "../../boost_1_54_0/lib_x64",
-				  "../../OpenSceneGraph-3.0.1_x64/lib" }
+					  "$(OSG_ROOT_X64)/include" }	  
+		libdirs { "$(BOOST_ROOT)/lib_x64",
+				  "$(OSG_ROOT_X64)/lib" }
 		
 		configuration { "Debug", "windows" }
 			defines { "WIN32", "_DEBUG", "_WINDOWS", "_USRDLL", "_CRT_SECURE_NO_WARNINGS" }

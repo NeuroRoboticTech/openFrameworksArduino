@@ -102,10 +102,11 @@
 #define SYSEX_DYNAMIXEL_SYNCH_MOVE_ADD						0x64 // Data packet to configure up to 5 motors to move using synch move command.
 #define SYSEX_DYNAMIXEL_SYNCH_MOVE_EXECUTE					0x63 // Data packet to configure up to 5 motors to move using synch move command.
 #define SYSEX_DYNAMIXEL_MOVE								0x62 // Data packet to send immediate move command.
-#define SYSEX_DYNAMIXEL_TRANSMIT_ERROR						0x61 // Data packet for when there is a transmission error detected on the arbotix side.
-#define SYSEX_DYNAMIXEL_SET_REGISTER						0x60 // Data packet to set a specific register in a Dynamixel servo.
-#define SYSEX_DYNAMIXEL_GET_REGISTER						0x59 // Data packet to get a specific register in a Dynamixel servo.
-#define SYSEX_COMMANDER_DATA		                        0x58 // Data packet with commander remote control buttons pressed.
+#define SYSEX_DYNAMIXEL_STOP								0x61 // Data packet to send immediate move command.
+#define SYSEX_DYNAMIXEL_TRANSMIT_ERROR						0x60 // Data packet for when there is a transmission error detected on the arbotix side.
+#define SYSEX_DYNAMIXEL_SET_REGISTER						0x59 // Data packet to set a specific register in a Dynamixel servo.
+#define SYSEX_DYNAMIXEL_GET_REGISTER						0x58 // Data packet to get a specific register in a Dynamixel servo.
+#define SYSEX_COMMANDER_DATA		                        0x57 // Data packet with commander remote control buttons pressed.
 
 // ---- arduino constants (for Arduino NG and Diecimila)
 
@@ -178,6 +179,9 @@ public:
 	unsigned int _load;
 	unsigned char _temperature;
 	unsigned char _voltage;
+	bool _moving;
+	unsigned char _LED;
+	unsigned char _alarm;
 
 	ofDynamixelData()
 	{
@@ -191,6 +195,9 @@ public:
 		_load = 0;
 		_temperature = 0;
 		_voltage = 0;
+		_moving = false;
+		_LED = 0;
+		_alarm = 0;
 	};
 };
 
@@ -456,6 +463,11 @@ class ARDUINO_PORT ofArduino{
 
 				//Transmits the command to move a single motor. Does not use the synch move.
 				void sendDynamixelMove(unsigned char servo, int pos, int speed);
+
+				//Transmits the stop to move a single motor. When the Arbotix recieves this command it will 
+				//slow the servo down to is slowest setting, then quickly query the servo for its current 
+				//position and the set the goal position to be the current position to stop it from moving.
+				void sendDynamixelStop(unsigned char servo);
 
 				//Transmits the command to set a byte of the servo register.
 				void sendDynamixelSetRegister(unsigned char servo, unsigned char reg, unsigned char length, unsigned int value);

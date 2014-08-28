@@ -1093,6 +1093,18 @@ void ofArduino::sendDynamixelMove(unsigned char servo, int pos, int speed) {
 	this->sendSysEx(SYSEX_DYNAMIXEL_MOVE, sysexData);
 }
 
+//Transmits the stop to move a single motor. 
+//Please note that this will ONLY work for an arbotix arduino board
+void ofArduino::sendDynamixelStop(unsigned char servo) {
+	int checksum = (~(servo)) & 0xFF;
+
+	//Send a sysex to let the arbotix know that we are starting a new synch move command
+	std::vector<unsigned char> sysexData;
+	sysexData.push_back(servo);
+	sysexData.push_back(checksum);
+	this->sendSysEx(SYSEX_DYNAMIXEL_STOP, sysexData);
+}
+
 //Transmits the command to set a byte of the servo register.
 void ofArduino::sendDynamixelSetRegister(unsigned char servo, unsigned char reg, unsigned char length, unsigned int value) {
 	unsigned char val0 = getLowByte(value);

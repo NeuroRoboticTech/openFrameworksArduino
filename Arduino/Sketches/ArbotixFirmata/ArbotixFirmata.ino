@@ -56,10 +56,11 @@
 #define SYSEX_DYNAMIXEL_SYNCH_MOVE_ADD	    0x64 // Data packet to configure up to 5 motors to move using synch move command.
 #define SYSEX_DYNAMIXEL_SYNCH_MOVE_EXECUTE  0x63 // Data packet to configure up to 5 motors to move using synch move command.
 #define SYSEX_DYNAMIXEL_MOVE		    0x62 // Data packet to configure up to 5 motors to move using synch move command.
-#define SYSEX_DYNAMIXEL_TRANSMIT_ERROR	    0x61 // Data packet to for when there is a transmission error detected on the arbotix side.
-#define SYSEX_DYNAMIXEL_SET_REGISTER        0x60 // Data packet to set a specific register in a Dynamixel servo.
-#define SYSEX_DYNAMIXEL_GET_REGISTER	    0x59 // Data packet to get a specific register in a Dynamixel servo.
-#define SYSEX_COMMANDER_DATA		    0x58 // Data packet with commander remote control buttons pressed.
+#define SYSEX_DYNAMIXEL_STOP		    0x61 // Data packet to configure up to 5 motors to move using synch move command.
+#define SYSEX_DYNAMIXEL_TRANSMIT_ERROR	    0x60 // Data packet to for when there is a transmission error detected on the arbotix side.
+#define SYSEX_DYNAMIXEL_SET_REGISTER        0x59 // Data packet to set a specific register in a Dynamixel servo.
+#define SYSEX_DYNAMIXEL_GET_REGISTER	    0x58 // Data packet to get a specific register in a Dynamixel servo.
+#define SYSEX_COMMANDER_DATA		    0x57 // Data packet with commander remote control buttons pressed.
 
 #define DYNAMIXEL_TOTAL_SERVOS 30
 #define DYNAMIXEL_RX_PIN 10	 
@@ -72,8 +73,6 @@
 #ifdef ENABLE_COMMANDER
   //If defined then it setups an additional serial debug port to use.
   #define DEBUG_SERIAL 1
-  //#define DEBUG_RX_PIN 2	 
-  //#define DEBUG_TX_PIN 3
 #endif
 
 /*==============================================================================
@@ -264,7 +263,7 @@ void setPinModeCallback(byte pin, int mode)
     reportAnalogCallback(PIN_TO_ANALOG(pin), mode == ANALOG ? 1 : 0); // turn on/off reporting
   }
   if (IS_PIN_DIGITAL(pin)) {
-    if (mode == INPUT || mode == INPUT_PULLUP) {
+    if (mode == INPUT) { // || mode == INPUT_PULLUP
       portConfigInputs[pin/8] |= (1 << (pin & 7));
     } else {
       portConfigInputs[pin/8] &= ~(1 << (pin & 7));
@@ -317,13 +316,13 @@ void setPinModeCallback(byte pin, int mode)
       pinConfig[pin] = I2C;
     }
     break;
-  case INPUT_PULLUP:
+/*  case INPUT_PULLUP:
     if (IS_PIN_DIGITAL(pin)) {
       pinMode(PIN_TO_DIGITAL(pin), INPUT); // disable output driver
       digitalWrite(PIN_TO_DIGITAL(pin), HIGH); // enable internal pull-ups
       pinConfig[pin] = INPUT_PULLUP;
     }
-    break;
+    break;*/
   default:
     Firmata.sendString("Unknown pin mode"); // TODO: put error msgs in EEPROM
   }
@@ -746,13 +745,45 @@ void sysexCallback(byte command, byte argc, byte *argv)
         sendDynamixelTransmitError(SYSEX_DYNAMIXEL_MOVE, servo);
     
 #ifdef DEBUG_SERIAL
-      commanderSerial.println("Recieved Dynamixel move ");  
-      commanderSerial.print(", servo: "); commanderSerial.print(servo);
-      commanderSerial.print(", pos: "); commanderSerial.print(pos);
-      commanderSerial.print(", speed: "); commanderSerial.print(speed);
-      commanderSerial.print(", rec checksum: "); commanderSerial.print(recChecksum);
-      commanderSerial.print(", checksum: "); commanderSerial.print(checksum);
-      commanderSerial.print ("\n");
+      //commanderSerial.println("Recieved Dynamixel move ");  
+      //commanderSerial.print(", servo: "); commanderSerial.print(servo);
+      //commanderSerial.print(", pos: "); commanderSerial.print(pos);
+      //commanderSerial.print(", speed: "); commanderSerial.print(speed);
+      //commanderSerial.print(", rec checksum: "); commanderSerial.print(recChecksum);
+      //commanderSerial.print(", checksum: "); commanderSerial.print(checksum);
+      //commanderSerial.print ("\n");
+#endif
+    }
+    break;
+  case SYSEX_DYNAMIXEL_STOP: {
+      // these vars are here for clarity, they'll optimized away by the compiler
+      byte servo = argv[0] + (argv[1] << 7);
+      byte recChecksum = argv[2] + (argv[3] << 7);
+      int checksum = (~(servo)) & 0xFF;
+      int pos = 0;
+      
+      if(recChecksum == checksum)  
+      {
+        //First set speed to slowest setting.
+        SetSpeed(servo, 1);
+        delay(10);
+        
+        //Now get the servo position
+        pos = GetPosition(servo);
+        
+        //And set the goal position to that value.
+        SetPosition(servo, pos);
+      }
+      else
+        sendDynamixelTransmitError(SYSEX_DYNAMIXEL_MOVE, servo);
+    
+#ifdef DEBUG_SERIAL
+      //commanderSerial.println("Recieved Dynamixel Stop ");  
+      //commanderSerial.print(", servo: "); commanderSerial.print(servo);
+      //commanderSerial.print(", pos: "); commanderSerial.print(pos);
+      //commanderSerial.print(", rec checksum: "); commanderSerial.print(recChecksum);
+      //commanderSerial.print(", checksum: "); commanderSerial.print(checksum);
+      //commanderSerial.print ("\n");
 #endif
     }
     break;
