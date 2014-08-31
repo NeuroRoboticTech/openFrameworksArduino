@@ -26,7 +26,7 @@ ifeq ($(config),debug)
   DEFINES   += -D_DEBUG
   INCLUDES  += 
   CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
-  CFLAGS    += $(CPPFLAGS) $(ARCH) -g -fPIC -std=c++11
+  CFLAGS    += $(CPPFLAGS) $(ARCH) -g -fPIC
   CXXFLAGS  += $(CFLAGS) 
   LDFLAGS   += -shared
   LIBS      += -ldl
@@ -48,7 +48,7 @@ ifeq ($(config),release)
   DEFINES   += -DNDEBUG
   INCLUDES  += 
   CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
-  CFLAGS    += $(CPPFLAGS) $(ARCH) -O2 -fPIC -std=c++11
+  CFLAGS    += $(CPPFLAGS) $(ARCH) -O2 -fPIC
   CXXFLAGS  += $(CFLAGS) 
   LDFLAGS   += -s -shared
   LIBS      += -ldl
