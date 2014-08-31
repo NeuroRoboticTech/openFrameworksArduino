@@ -6,7 +6,7 @@ int main(int argc, char** argv)
 	bool bForward = false;
 	int iMotorCount = 0;
 
-	if(!ard.connect("COM6", 256000)) // 57600
+	if(!ard.connect("COM6", 230400)) // 57600  256000
 	{
 		std::cout << "Failed to connect to arduino!";
 		return -1;
