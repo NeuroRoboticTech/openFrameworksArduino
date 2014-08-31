@@ -8,8 +8,8 @@ solution "openFrameworksArduino"
 		kind     "SharedLib"
 		files  { "../src/*.h",
 				 "../src/*.cpp"}
-		includedirs { "../../boost_1_54_0" }	  
-		libdirs { "../../boost_1_54_0/lib" }
+		includedirs { "$(BOOST_ROOT)" }	  
+		libdirs { "$(BOOST_ROOT)/lib" }
 		
 		configuration { "Debug", "windows" }
 			defines { "WIN32", "_DEBUG", "_WINDOWS", "_USRDLL", "_CRT_SECURE_NO_WARNINGS" }
@@ -28,9 +28,11 @@ solution "openFrameworksArduino"
 		kind     "ConsoleApp"
 		files  { "../examples/*.h",
 				 "../examples/*.cpp"}
-		includedirs { "../../boost_1_54_0",
-					  "../src" }	  
-		libdirs { "../../boost_1_54_0/lib" }
+		includedirs { "$(BOOST_ROOT)",
+					  "../src",
+					  "$(OSG_ROOT)/include" }	  
+		libdirs { "$(BOOST_ROOT)/lib",
+				  "$(OSG_ROOT)/lib" }
 		
 		configuration { "Debug", "windows" }
 			defines { "WIN32", "_DEBUG", "_WINDOWS", "_USRDLL", "_CRT_SECURE_NO_WARNINGS" }

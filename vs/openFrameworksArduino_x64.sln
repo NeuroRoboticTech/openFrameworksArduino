@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "openFrameworksArduino_x64", "openFrameworksArduino_x64.vcxproj", "{5673C42F-58B0-004E-A515-86185D849EE1}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "openFrameworksArduino_x64", "openFrameworksArduino_x64.vcxproj", "{D4AD56C3-FF8F-0841-8CC1-60938EF10F31}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ArduinoTest_x64", "ArduinoTest_x64.vcxproj", "{E9CAAA30-4700-5348-A910-E05672508E38}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ArduinoTest_x64", "ArduinoTest_x64.vcxproj", "{5CDA96BC-5381-C249-8E4C-8DC6D079DB5E}"
 	ProjectSection(ProjectDependencies) = postProject
-		{5673C42F-58B0-004E-A515-86185D849EE1} = {5673C42F-58B0-004E-A515-86185D849EE1}
+		{D4AD56C3-FF8F-0841-8CC1-60938EF10F31} = {D4AD56C3-FF8F-0841-8CC1-60938EF10F31}
 	EndProjectSection
 EndProject
 Global
@@ -14,14 +14,14 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{5673C42F-58B0-004E-A515-86185D849EE1}.Debug|x64.ActiveCfg = Debug|x64
-		{5673C42F-58B0-004E-A515-86185D849EE1}.Debug|x64.Build.0 = Debug|x64
-		{5673C42F-58B0-004E-A515-86185D849EE1}.Release|x64.ActiveCfg = Release|x64
-		{5673C42F-58B0-004E-A515-86185D849EE1}.Release|x64.Build.0 = Release|x64
-		{E9CAAA30-4700-5348-A910-E05672508E38}.Debug|x64.ActiveCfg = Debug|x64
-		{E9CAAA30-4700-5348-A910-E05672508E38}.Debug|x64.Build.0 = Debug|x64
-		{E9CAAA30-4700-5348-A910-E05672508E38}.Release|x64.ActiveCfg = Release|x64
-		{E9CAAA30-4700-5348-A910-E05672508E38}.Release|x64.Build.0 = Release|x64
+		{D4AD56C3-FF8F-0841-8CC1-60938EF10F31}.Debug|x64.ActiveCfg = Debug|x64
+		{D4AD56C3-FF8F-0841-8CC1-60938EF10F31}.Debug|x64.Build.0 = Debug|x64
+		{D4AD56C3-FF8F-0841-8CC1-60938EF10F31}.Release|x64.ActiveCfg = Release|x64
+		{D4AD56C3-FF8F-0841-8CC1-60938EF10F31}.Release|x64.Build.0 = Release|x64
+		{5CDA96BC-5381-C249-8E4C-8DC6D079DB5E}.Debug|x64.ActiveCfg = Debug|x64
+		{5CDA96BC-5381-C249-8E4C-8DC6D079DB5E}.Debug|x64.Build.0 = Debug|x64
+		{5CDA96BC-5381-C249-8E4C-8DC6D079DB5E}.Release|x64.ActiveCfg = Release|x64
+		{5CDA96BC-5381-C249-8E4C-8DC6D079DB5E}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
