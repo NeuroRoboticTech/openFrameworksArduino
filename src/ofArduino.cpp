@@ -7,10 +7,10 @@
  *   - fixed ability to use analog pins as digital inputs
  *
  * 3/5/11:
- *   - added servo support for firmata 2.2 and greater (should be 
+ *   - added servo support for firmata 2.2 and greater (should be
  *     backwards compatible with Erik Sjodin's older firmata servo
  *     implementation)
- * 
+ *
  *
  * Copyright 2007-2008 (c) Erik Sjodin, eriksjodin.net
  *
@@ -75,10 +75,10 @@ ofArduino::~ofArduino() {
 // the version is sent automatically by the Arduino board on startup
 void ofArduino::initPins() {
     int firstAnalogPin;
-    
+
     if (_initialized) return;   // already initialized
-    
-    // support Firmata 2.3/Arduino 1.0 with backwards compatibility 
+
+    // support Firmata 2.3/Arduino 1.0 with backwards compatibility
     // to previous protocol versions
     if (_firmwareVersionSum >= FIRMWARE2_3) {
         _totalDigitalPins = 20;
@@ -87,20 +87,20 @@ void ofArduino::initPins() {
         _totalDigitalPins = ARD_TOTAL_DIGITAL_PINS;
         firstAnalogPin = 16;
     }
-    
+
     // ports
 	for(int i=0; i<ARD_TOTAL_PORTS; ++i) {
 		_digitalPortValue[i]=0;
 		_digitalPortReporting[i] = ARD_OFF;
 	}
-    
+
     // digital pins
 	for(int i=0; i<firstAnalogPin; ++i) {
 		_digitalPinValue[i] = -1;
 		_digitalPinMode[i] = ARD_OUTPUT;
 		_digitalPinReporting[i] = ARD_OFF;
 	}
-    
+
 	// analog in pins
     for (int i=firstAnalogPin; i<_totalDigitalPins; ++i) {
 		_analogPinReporting[i-firstAnalogPin] = ARD_OFF;
@@ -112,7 +112,7 @@ void ofArduino::initPins() {
 	for (int i=0; i<_totalDigitalPins; ++i) {
 		_servoValue[i] = -1;
 	}
-    
+
     _initialized = true;
 }
 
@@ -133,7 +133,7 @@ bool ofArduino::connect(std::string device, int baud){
 
 // this method is not recommended
 // the preferred method is to listen for the EInitialized event in your application
-bool ofArduino::isArduinoReady(){	
+bool ofArduino::isArduinoReady(){
 	if(bUseDelay) {
 		if (_initialized || (_Timer.elapsed() > OF_ARDUINO_DELAY_LENGTH)) {
 			initPins();
@@ -227,8 +227,8 @@ void ofArduino::sendDigital(int pin, int value, bool force){
 		int bit=0;
         int port1Offset;
         int port2Offset;
-        
-        // support Firmata 2.3/Arduino 1.0 with backwards compatibility 
+
+        // support Firmata 2.3/Arduino 1.0 with backwards compatibility
         // to previous protocol versions
         if (_firmwareVersionSum >= FIRMWARE2_3) {
             port1Offset = 16;
@@ -322,14 +322,14 @@ void ofArduino::sendReset(){
 void ofArduino::sendAnalogPinReporting(int pin, int mode){
 
     int firstAnalogPin;
-    // support Firmata 2.3/Arduino 1.0 with backwards compatibility 
+    // support Firmata 2.3/Arduino 1.0 with backwards compatibility
     // to previous protocol versions
     if (_firmwareVersionSum >= FIRMWARE2_3) {
         firstAnalogPin = 14;
     } else {
         firstAnalogPin = 16;
     }
-    
+
     // if this analog pin is set as a digital input, disable digital pin reporting
     if (_digitalPinReporting[pin + firstAnalogPin] == ARD_ON) {
         sendDigitalPinReporting(pin + firstAnalogPin, ARD_OFF);
@@ -397,17 +397,17 @@ std::string ofArduino::getFirmwareName(){
 	return _firmwareName;
 }
 
-int ofArduino::makeWord(unsigned char  low, unsigned char  high) 
+int ofArduino::makeWord(unsigned char  low, unsigned char  high)
 {
 	return (int) (low + (high<<8));
 }
 
-unsigned char  ofArduino::getLowByte(int val) 
+unsigned char  ofArduino::getLowByte(int val)
 {
 	return (unsigned char ) (val & 0xff);
 }
 
-unsigned char  ofArduino::getHighByte(int val) 
+unsigned char  ofArduino::getHighByte(int val)
 {
 	return (unsigned char ) ((val & 0xff00)>> 8);
 }
@@ -465,7 +465,7 @@ void ofArduino::processData(unsigned char inputData){
 	}
 	// we have SysEx command data
 	else if(_waitForData<0){
-		
+
 		// we have all sysex data
 		if(inputData==FIRMATA_END_SYSEX){
 			_waitForData=0;
@@ -516,6 +516,7 @@ void ofArduino::processSysExData(std::vector<unsigned char> data){
 	std::string str;
 
 	std::vector<unsigned char>::iterator it;
+	std::vector<unsigned char>::iterator vend;
 	unsigned char buffer;
 	unsigned int iID = 0;
 	unsigned char iCmd = 0;
@@ -549,7 +550,7 @@ void ofArduino::processSysExData(std::vector<unsigned char> data){
             if (!_initialized) {
                 initPins();
                 EInitialized(_majorFirmwareVersion);
-                
+
             }
 
 			checkIncomingSysExMessage(FIRMATA_SYSEX_REPORT_FIRMWARE);
@@ -576,21 +577,22 @@ void ofArduino::processSysExData(std::vector<unsigned char> data){
 		break;
 		case SYSEX_DYNAMIXEL_KEY_SERVO_DATA:
 			it = data.begin();
+			vend = data.end();
 			it++; // skip the first byte, which is the Dynamixel servo command
 
 			//Get the servo ID number
-			iID = getByteFromDataIterator(it, data.end());
+			iID = getByteFromDataIterator(it, vend);
 
 			if(iID < MAX_DYNAMIXEL_SERVOS && data.size() == DYNAMIXEL_KEY_DATA_LENGTH)
 			{
 				//Now get current position.
-				unsigned int iPos = GetWordFromDataIterator(it, data.end());
+				unsigned int iPos = GetWordFromDataIterator(it, vend);
 
 				//Now get the speed.
-				unsigned int iSpeed = GetWordFromDataIterator(it, data.end());
+				unsigned int iSpeed = GetWordFromDataIterator(it, vend);
 
 				//Get the checksum
-				unsigned char iRecChecksum = getByteFromDataIterator(it, data.end());
+				unsigned char iRecChecksum = getByteFromDataIterator(it, vend);
 				unsigned int iCheckSum = (~(iID + iPos + iSpeed)) & 0xFF;
 
 				if(iCheckSum == iRecChecksum)
@@ -606,30 +608,31 @@ void ofArduino::processSysExData(std::vector<unsigned char> data){
 		break;
 		case SYSEX_DYNAMIXEL_ALL_SERVO_DATA:
 			it = data.begin();
+			vend = data.end();
 			it++; // skip the first byte, which is the Dynamixel servo command
 
 			//Get the servo ID number
-			iID = getByteFromDataIterator(it, data.end());
+			iID = getByteFromDataIterator(it, vend);
 
 			if(iID < MAX_DYNAMIXEL_SERVOS && data.size() == DYNAMIXEL_ALL_DATA_LENGTH)
 			{
 				//Now get current position.
-				unsigned int iPos = GetWordFromDataIterator(it, data.end());
+				unsigned int iPos = GetWordFromDataIterator(it, vend);
 
 				//Now get the speed.
-				unsigned int iSpeed = GetWordFromDataIterator(it, data.end());
+				unsigned int iSpeed = GetWordFromDataIterator(it, vend);
 
 				//Now get the load.
-				unsigned int iLoad = GetWordFromDataIterator(it, data.end());
+				unsigned int iLoad = GetWordFromDataIterator(it, vend);
 
 				//Now get the voltage.
-				unsigned char cVoltage = getByteFromDataIterator(it, data.end());
+				unsigned char cVoltage = getByteFromDataIterator(it, vend);
 
 				//Now get the voltage.
-				unsigned char cTemp = getByteFromDataIterator(it, data.end());
+				unsigned char cTemp = getByteFromDataIterator(it, vend);
 
 				//Get the checksum
-				unsigned char iRecChecksum = getByteFromDataIterator(it, data.end());
+				unsigned char iRecChecksum = getByteFromDataIterator(it, vend);
 				unsigned int iCheckSum = (~(iID + iPos + iSpeed + iLoad + cVoltage + cTemp)) & 0xFF;
 
 				if(iCheckSum == iRecChecksum)
@@ -648,16 +651,17 @@ void ofArduino::processSysExData(std::vector<unsigned char> data){
 		break;
 		case SYSEX_DYNAMIXEL_TRANSMIT_ERROR:
 			it = data.begin();
+			vend = data.end();
 			it++; // skip the first byte, which is the Dynamixel servo command
 
 			//Get the command value
-			iCmd = getByteFromDataIterator(it, data.end());
+			iCmd = getByteFromDataIterator(it, vend);
 
 			//Get the servo ID number
-			iID = getByteFromDataIterator(it, data.end());
+			iID = getByteFromDataIterator(it, vend);
 
 			//Get the servo ID number
-			iRecChecksum = getByteFromDataIterator(it, data.end());
+			iRecChecksum = getByteFromDataIterator(it, vend);
 
 			//Get the servo ID number
 			iChecksum = (~(iCmd + iID)) & 0xFF;
@@ -670,19 +674,20 @@ void ofArduino::processSysExData(std::vector<unsigned char> data){
 		case SYSEX_DYNAMIXEL_GET_REGISTER:
 			if(data.size() == DYNAMIXEL_GET_REGISTER_LENGTH) {
 				it = data.begin();
+                vend = data.end();
 				it++; // skip the first byte, which is the Dynamixel servo command
 
 				//Get the servo value
-				iID = getByteFromDataIterator(it, data.end());
+				iID = getByteFromDataIterator(it, vend);
 
 				//Get the register address
-				unsigned int iReg = getByteFromDataIterator(it, data.end());
+				unsigned int iReg = getByteFromDataIterator(it, vend);
 
 				//Get the register value
-				unsigned int iValue = GetWordFromDataIterator(it, data.end());
+				unsigned int iValue = GetWordFromDataIterator(it, vend);
 
 				//Get the checksum
-				iRecChecksum = getByteFromDataIterator(it, data.end());
+				iRecChecksum = getByteFromDataIterator(it, vend);
 
 				//Get the servo ID number
 				iChecksum = (~(iID + iReg + iValue)) & 0xFF;
@@ -697,14 +702,15 @@ void ofArduino::processSysExData(std::vector<unsigned char> data){
 			if(data.size() == COMMANDER_DATA_LENGTH)
 			{
 				it = data.begin();
+                vend = data.end();
 				it++; // skip the first byte, which is the Commander command
 
-				signed char iWalkV = (signed char) getByteFromDataIterator(it, data.end());
-				signed char iWalkH = (signed char) getByteFromDataIterator(it, data.end());
-				signed char iLookV = (signed char) getByteFromDataIterator(it, data.end());
-				signed char iLookH = (signed char) getByteFromDataIterator(it, data.end());
-				signed char iButtons = (signed char) getByteFromDataIterator(it, data.end());
-				iRecChecksum = getByteFromDataIterator(it, data.end());
+				signed char iWalkV = (signed char) getByteFromDataIterator(it, vend);
+				signed char iWalkH = (signed char) getByteFromDataIterator(it, vend);
+				signed char iLookV = (signed char) getByteFromDataIterator(it, vend);
+				signed char iLookH = (signed char) getByteFromDataIterator(it, vend);
+				signed char iButtons = (signed char) getByteFromDataIterator(it, vend);
+				iRecChecksum = getByteFromDataIterator(it, vend);
 				iChecksum = (~(iWalkV + iWalkH + iLookV + iLookH + iButtons)) & 0xFF;
 
 				if(iChecksum == iRecChecksum)
@@ -716,7 +722,7 @@ void ofArduino::processSysExData(std::vector<unsigned char> data){
 					_commanderData._lookH = iLookH;
 					_commanderData._buttons = iButtons;
 					//_commanderData._ext = (signed char) getByteFromDataIterator(it, data.end());
-			
+
 					ECommanderDataReceived(iID);
 					checkIncomingSysExMessage(SYSEX_COMMANDER_DATA);
 				}
@@ -740,7 +746,7 @@ void ofArduino::processDigitalPort(int port, unsigned char value){
 	int pin;
     int port1Pins;
     int port2Pins;
-    
+
     // support Firmata 2.3/Arduino 1.0 with backwards compatibility to previous protocol versions
     if (_firmwareVersionSum >= FIRMWARE2_3) {
         port1Pins = 8;
@@ -749,7 +755,7 @@ void ofArduino::processDigitalPort(int port, unsigned char value){
         port1Pins = 6;
         port2Pins = 6;
     }
-    
+
 	switch(port) {
     case 0: // pins 2-7  (0,1 are ignored as serial RX/TX)
         for(i=2; i<8; ++i) {
@@ -828,20 +834,20 @@ void ofArduino::sendDigitalPortReporting(int port, int mode){
 	sendByte(mode);
 	_digitalPortReporting[port] = mode;
     int offset;
-    
+
     if (_firmwareVersionSum >= FIRMWARE2_3) {
         offset = 2;
     } else {
         offset = 0;
     }
-    
+
     // for Firmata 2.3 and higher:
     if(port==1 && mode==ARD_ON) {
         for (int i=0; i<2; i++) {
             _analogPinReporting[i] = ARD_OFF;
-		} 
+		}
     }
-    
+
     // for Firmata 2.3 and all prior Firmata protocol versions:
 	if(port==2 && mode==ARD_ON){ // if reporting is turned on on port 2 then ofArduino on the Arduino disables all analog reporting
 
@@ -855,7 +861,7 @@ void ofArduino::sendDigitalPinReporting(int pin, int mode){
 	_digitalPinReporting[pin] = mode;
     int port1Offset;
     int port2Offset;
-    
+
     // Firmata backwards compatibility mess
     if (_firmwareVersionSum >= FIRMWARE2_3) {
         port1Offset = 15;
@@ -864,7 +870,7 @@ void ofArduino::sendDigitalPinReporting(int pin, int mode){
         port1Offset = 13;
         port2Offset = 21;
     }
-    
+
 	if(mode==ARD_ON){	// enable reporting for the port
 		if(pin<=7 && pin>=2)
 			sendDigitalPortReporting(0, ARD_ON);
@@ -872,7 +878,7 @@ void ofArduino::sendDigitalPinReporting(int pin, int mode){
         if(pin<=port1Offset && pin>=8)
             sendDigitalPortReporting(1, ARD_ON);
         if(pin<=port2Offset && pin>=16)
-            sendDigitalPortReporting(2, ARD_ON);          
+            sendDigitalPortReporting(2, ARD_ON);
 	}
 	else if(mode==ARD_OFF){
 		int i;
@@ -927,11 +933,11 @@ int ofArduino::getValueFromTwo7bitBytes(unsigned char lsb, unsigned char msb){
 
 // SysEx data is sent as 8-bit bytes split into two 7-bit bytes, this function merges two 7-bit bytes back into one 8-bit byte.
 unsigned int ofArduino::getByteFromDataIterator(std::vector<unsigned char>::iterator &it, std::vector<unsigned char>::iterator &end){
-	if(it == end) 
+	if(it == end)
 		return 0;
 	unsigned char lsb = (*it++);
-	
-	if(it == end) 
+
+	if(it == end)
 		return 0;
 	unsigned char msb = (*it++);
 
@@ -955,7 +961,7 @@ void ofArduino::sendServo(int pin, int value, bool force){
 			sendValueAsTwo7bitBytes(value);
 			_digitalPinValue[pin] = value;
 		}
-	} 
+	}
 	// for versions prior to 2.2
 	else {
 		if(_digitalPinMode[pin]==ARD_SERVO && (_servoValue[pin]!=value || force)){
@@ -965,7 +971,7 @@ void ofArduino::sendServo(int pin, int value, bool force){
 			sendValueAsTwo7bitBytes(value);
 			sendByte(FIRMATA_END_SYSEX);
 			_servoValue[pin]=value;
-		}		
+		}
 	}
 }
 
@@ -975,7 +981,7 @@ void ofArduino::sendServoAttach(int pin, int minPulse, int maxPulse, int angle) 
 	// for firmata v2.2 and greater
 	if (_firmwareVersionSum >= FIRMWARE2_2) {
 		sendByte(FIRMATA_SYSEX_SERVO_CONFIG);
-	} 
+	}
 	// for versions prior to 2.2
 	else {
 		sendByte(SYSEX_SERVO_ATTACH);
@@ -1001,11 +1007,11 @@ int ofArduino::getServo(int pin){
 		// for firmata v2.2 and greater
 		if (_firmwareVersionSum >= FIRMWARE2_2) {
 			return _digitalPinValue[pin];
-		} 
+		}
 		// for versions prior to 2.2
 		else {
 			return _servoValue[pin];
-		}		
+		}
 	else
 		return -1;
 }
@@ -1093,7 +1099,7 @@ void ofArduino::sendDynamixelMove(unsigned char servo, int pos, int speed) {
 	this->sendSysEx(SYSEX_DYNAMIXEL_MOVE, sysexData);
 }
 
-//Transmits the stop to move a single motor. 
+//Transmits the stop to move a single motor.
 //Please note that this will ONLY work for an arbotix arduino board
 void ofArduino::sendDynamixelStop(unsigned char servo) {
 	int checksum = (~(servo)) & 0xFF;
@@ -1152,7 +1158,7 @@ bool ofArduino::waitForSysExMessage(unsigned char cmd, unsigned int timeout_sec)
 		if(timeout_sec> 0 && _Timer.elapsed()> timeout_sec)
 			return false;
 
-		update(); 
+		update();
 	}
 
 	_waitingForSysExMessage = -1;
