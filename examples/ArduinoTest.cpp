@@ -1,5 +1,9 @@
 #include "ArduinoTest.h"
 
+#define TC_ID 1
+#define CF_ID 2
+#define GRIP_ID 3
+
 ArduinoTest::ArduinoTest(void)
 {
 	// listen for EInitialized notification. this indicates that
@@ -73,50 +77,50 @@ void ArduinoTest::setupArduino(const int & version)
 	m_EDynamixelGetRegister = this->EDynamixelGetRegister.connect(boost::bind(&ArduinoTest::dynamixelGetRegister, this, _1, _2, _3));
 
 	//Set the CW and CCW limits to be in a valid range for this test
-	this->sendDynamixelSetRegister(3, 0x06, 2, 170);
-	this->sendDynamixelSetRegister(3, 0x08, 2, 800);
+	this->sendDynamixelSetRegister(TC_ID, 0x06, 2, 170);
+	this->sendDynamixelSetRegister(TC_ID, 0x08, 2, 800);
 
-	this->sendDynamixelGetRegister(3, 0x06, 2);
+	this->sendDynamixelGetRegister(TC_ID, 0x06, 2);
 	bool ret = this->waitForSysExMessage(SYSEX_DYNAMIXEL_GET_REGISTER, 2);
-	this->sendDynamixelGetRegister(3, 0x08, 2);
+	this->sendDynamixelGetRegister(TC_ID, 0x08, 2);
 	ret = this->waitForSysExMessage(SYSEX_DYNAMIXEL_GET_REGISTER, 2);
 	ret = this->waitForSysExMessage(SYSEX_DYNAMIXEL_SET_REGISTER, 2);
 
-	this->sendDynamixelServoAttach(1);
-	this->sendDynamixelServoAttach(2);
-	this->sendDynamixelServoAttach(3);
+	this->sendDynamixelServoAttach(TC_ID);
+	this->sendDynamixelServoAttach(CF_ID);
+	this->sendDynamixelServoAttach(GRIP_ID);
 
-	this->sendDynamixelMove(1, 400, 0);
+	this->sendDynamixelMove(GRIP_ID, 400, 0);
 	boost::this_thread::sleep(boost::posix_time::milliseconds(200));
 
-	this->sendDynamixelMove(2, 400, 0);
+	this->sendDynamixelMove(CF_ID, 400, 0);
 	boost::this_thread::sleep(boost::posix_time::milliseconds(200));
 
-	this->sendDynamixelMove(3, 400, 0);
+	this->sendDynamixelMove(TC_ID, 400, 0);
 	boost::this_thread::sleep(boost::posix_time::milliseconds(200));
 
 	//Start a move then stop it.
-	this->sendDynamixelMove(3, 700, 20);
+	this->sendDynamixelMove(TC_ID, 700, 20);
 	boost::this_thread::sleep(boost::posix_time::milliseconds(2000));
 
-	this->sendDynamixelStop(3);
+	this->sendDynamixelStop(TC_ID);
 
 	//Wait for a second.
 	boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
 
 	m_bSwingLeg = false;
-	this->sendDynamixelSynchMoveAdd(1, 512, 100);
-	this->sendDynamixelSynchMoveAdd(2, 512, 100);
-	this->sendDynamixelSynchMoveAdd(3, 512, 100);
+	this->sendDynamixelSynchMoveAdd(TC_ID, 512, 100);
+	this->sendDynamixelSynchMoveAdd(CF_ID, 512, 100);
+	this->sendDynamixelSynchMoveAdd(GRIP_ID, 512, 100);
 	this->sendDynamixelSynchMoveExecute();
 
 	//Wait for a second.
 	boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
 
 	//Get the motor moving slowly over to the side
-	this->sendDynamixelSynchMoveAdd(1, 650, 100);
-	this->sendDynamixelSynchMoveAdd(2, 650, 100);
-	this->sendDynamixelSynchMoveAdd(3, 180, 100);
+	this->sendDynamixelSynchMoveAdd(TC_ID, 180, 100);
+	this->sendDynamixelSynchMoveAdd(CF_ID, 650, 100);
+	this->sendDynamixelSynchMoveAdd(GRIP_ID, 650, 100);
 	this->sendDynamixelSynchMoveExecute();
 	m_bSwingLeg = true;
 }
@@ -192,27 +196,27 @@ void ArduinoTest::dynamixelRecieved(const int & servo)
 
  //   // do something with the analog input. here we're simply going to print the pin number and
  //   // value to the screen each time it changes
-	//if(servo == 3)
+	//if(servo == TC_ID)
 	//    std::cout << "servo: " << servo << ", Pos: " << _dynamixelServos[servo]._actualPosition << ", swing: " << m_bSwingLeg  << "\r\n";
 
 	_dynamixelServos[servo]._keyChanged = false;
 	_dynamixelServos[servo]._allChanged = false;
 
-	if(	m_bSwingLeg && servo == 3 && _dynamixelServos[servo]._actualPosition <= (185))
+	if(	m_bSwingLeg && servo == TC_ID && _dynamixelServos[servo]._actualPosition <= (185))
 	{
 		m_bSwingLeg = false;
-		this->sendDynamixelSynchMoveAdd(1, 512, 100);
-		this->sendDynamixelSynchMoveAdd(2, 512, 100);
-		this->sendDynamixelSynchMoveAdd(3, 800, 100);
+		this->sendDynamixelSynchMoveAdd(TC_ID, 800, 100);
+		this->sendDynamixelSynchMoveAdd(CF_ID, 512, 100);
+		this->sendDynamixelSynchMoveAdd(GRIP_ID, 512, 100);
 		this->sendDynamixelSynchMoveExecute();
 	    std::cout << "Swing\r\n";
 	}
-	else if(!m_bSwingLeg && servo == 3 && _dynamixelServos[servo]._actualPosition >= (795))
+	else if(!m_bSwingLeg && servo == TC_ID && _dynamixelServos[servo]._actualPosition >= (795))
 	{
 		m_bSwingLeg = true;
-		this->sendDynamixelSynchMoveAdd(1, 650, 100);
-		this->sendDynamixelSynchMoveAdd(2, 650, 100);
-		this->sendDynamixelSynchMoveAdd(3, 180, 100);
+		this->sendDynamixelSynchMoveAdd(TC_ID, 180, 100);
+		this->sendDynamixelSynchMoveAdd(CF_ID, 650, 100);
+		this->sendDynamixelSynchMoveAdd(GRIP_ID, 650, 100);
 		this->sendDynamixelSynchMoveExecute();
 	    std::cout << "Stance\r\n";
 	}

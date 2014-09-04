@@ -1117,7 +1117,7 @@ void setup()
   Firmata.attach(START_SYSEX, sysexCallback);
   Firmata.attach(SYSTEM_RESET, systemResetCallback);
 
-  Firmata.begin(230400); //57600 256000
+  Firmata.begin(115200); //57600 256000 230400 115200
   systemResetCallback();  // reset to default config
 
 #ifdef ENABLE_COMMANDER
