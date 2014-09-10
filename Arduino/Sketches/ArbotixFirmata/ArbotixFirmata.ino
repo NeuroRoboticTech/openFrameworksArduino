@@ -33,7 +33,7 @@
 #include <Wire.h>
 #include <Firmata.h>
 #include <SoftwareSerial.h>
-#include "CommanderSS.h"
+//#include "CommanderSS.h"
 #include <ax12.h>
 
 // move the following defines to Firmata.h?
@@ -70,10 +70,10 @@
 #define COMMANDER_RX_PIN 2	 
 #define COMMANDER_TX_PIN 3
 
-#ifdef ENABLE_COMMANDER
+//#ifdef ENABLE_COMMANDER
   //If defined then it setups an additional serial debug port to use.
   #define DEBUG_SERIAL 1
-#endif
+//#endif
 
 /*==============================================================================
  * GLOBAL VARIABLES
@@ -145,9 +145,12 @@ dynamixelData synchMoveData[DYNAMIXEL_TOTAL_SERVOS];
 //sending the data back to the computer
 dynamixelReadData reportDynData[DYNAMIXEL_TOTAL_SERVOS];
 
+#ifdef DEBUG_SERIAL
+  SoftwareSerial commanderSerial = SoftwareSerial(COMMANDER_RX_PIN, COMMANDER_TX_PIN); // RX, TX
+#endif
+
 #ifdef ENABLE_COMMANDER
   CommanderData commanderData;
-  SoftwareSerial commanderSerial = SoftwareSerial(COMMANDER_RX_PIN, COMMANDER_TX_PIN); // RX, TX
   CommanderSS command = CommanderSS(&commanderSerial);
 #endif
 
@@ -245,7 +248,7 @@ void setPinModeCallback(byte pin, int mode)
   if(pin == DYNAMIXEL_RX_PIN || pin == DYNAMIXEL_TX_PIN)
     return;
 
-#ifdef ENABLE_COMMANDER
+#ifdef ENABLE_COMMANDER || DEBUG_SERIAL
   //if the debug serial is on then skip config of these pins also.
   if(pin == COMMANDER_RX_PIN || pin == COMMANDER_TX_PIN)
     return;
@@ -1126,7 +1129,18 @@ void setup()
   #ifdef DEBUG_SERIAL 
     commanderSerial.println("Setup finished");
   #endif
+#else 
+  #if DEBUG_SERIAL
+    commanderSerial.begin(38400);
+    commanderSerial.println("Setup finished");
+  #endif
 #endif
+
+//#if DEBUG_SERIAL
+//  commanderSerial.begin(38400);
+//  commanderSerial.println("Setup finished");
+//#endif
+
 }
 
 /*==============================================================================
