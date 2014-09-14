@@ -262,6 +262,7 @@ void ofSerial::close(){
 	#ifdef TARGET_WIN32
 	//---------------------------------------------
 		if (bInited){
+			std::cout << "closing serial" << "\r\n";
 			SetCommTimeouts(hComm,&oldTimeout);
 			CloseHandle(hComm);
 			hComm 		= INVALID_HANDLE_VALUE;
@@ -271,6 +272,7 @@ void ofSerial::close(){
     #else
     //---------------------------------------------
     	if (bInited){
+			std::cout << "closing serial" << "\r\n";
     		tcsetattr(fd,TCSANOW,&oldoptions);
     		::close(fd);
     		bInited = false;
@@ -303,6 +305,7 @@ bool ofSerial::setup(int deviceNumber, int baud){
 //----------------------------------------------------------------
 bool ofSerial::setup(std::string portName, int baud){
 
+	std::cout << "setup serial" << "\r\n";
 	bInited = false;
 
 	//---------------------------------------------
@@ -476,11 +479,11 @@ int ofSerial::writeBytes(unsigned char * buffer, int length){
 		if(numWritten <= 0){
 			if ( errno == EAGAIN )
 				return 0;
-			std::cout << "writeBytes(): couldn't write to port: " << errno << " " << strerror(errno) << "\r\n";
+			//std::cout << "writeBytes(): couldn't write to port: " << errno << " " << strerror(errno) << "\r\n";
 			return OF_SERIAL_ERROR;
 		}
 
-		std::cout << "wrote " << (int) numWritten << " bytes" << "\r\n";
+		//std::cout << "wrote " << (int) numWritten << " bytes" << "\r\n";
 
 	    return numWritten;
     #endif
@@ -490,10 +493,10 @@ int ofSerial::writeBytes(unsigned char * buffer, int length){
 	#ifdef TARGET_WIN32
 		DWORD written;
 		if(!WriteFile(hComm, buffer, length, &written,0)){
-			 std::cout << "writeBytes(): couldn't write to port" << "\r\n";
+			 //std::cout << "writeBytes(): couldn't write to port" << "\r\n";
 			 return OF_SERIAL_ERROR;
 		}
-		std::cout <<  "wrote " << (int) written << " bytes" << "\r\n";
+		//std::cout <<  "wrote " << (int) written << " bytes" << "\r\n";
 		return (int)written;
 	#else
 		return 0;

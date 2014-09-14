@@ -65,6 +65,7 @@ ofArduino::ofArduino(){
 
 	_waitingForSysExMessage = -1;
 	_sysExMessageFound = false;
+	_firmwareReceived = false;
 }
 
 ofArduino::~ofArduino() {
@@ -309,6 +310,7 @@ void ofArduino::sendProtocolVersionRequest(){
 }
 
 void ofArduino::sendFirmwareVersionRequest(){
+	_firmwareReceived = false;
 	sendByte(FIRMATA_START_SYSEX);
 	sendByte(FIRMATA_SYSEX_REPORT_FIRMWARE);
 	sendByte(FIRMATA_END_SYSEX);
@@ -542,8 +544,11 @@ void ofArduino::processSysExData(std::vector<unsigned char> data){
 					str+=buffer;
 			}
 			_firmwareName = str;
-
 			_firmwareVersionSum = _majorFirmwareVersion * 10 + _minorFirmwareVersion;
+
+			_firmwareReceived = true;
+			std::cout << this->getFirmwareName(); 
+			std::cout << "firmata v" << this->getMajorFirmwareVersion() << "." << this->getMinorFirmwareVersion() << "\r\n";
 			EFirmwareVersionReceived(_majorFirmwareVersion);
 
 			// trigger the initialization event
@@ -726,6 +731,25 @@ void ofArduino::processSysExData(std::vector<unsigned char> data){
 					ECommanderDataReceived(iID);
 					checkIncomingSysExMessage(SYSEX_COMMANDER_DATA);
 				}
+			}
+		break;
+		case SYSEX_DYNAMIXEL_STOPPED:
+			it = data.begin();
+			vend = data.end();
+			it++; // skip the first byte, which is the Dynamixel servo command
+
+			//Get the servo ID number
+			iID = getByteFromDataIterator(it, vend);
+
+			//Get the servo ID number
+			iRecChecksum = getByteFromDataIterator(it, vend);
+
+			//Get the servo ID number
+			iChecksum = (~(iID)) & 0xFF;
+
+			if(iChecksum == iRecChecksum) {
+				EDynamixelStopped(iID);
+				checkIncomingSysExMessage(SYSEX_DYNAMIXEL_STOPPED);
 			}
 		break;
 		default: // the message isn't in Firmatas extended command set
@@ -1139,6 +1163,39 @@ void ofArduino::sendDynamixelGetRegister(unsigned char servo, unsigned char reg,
 	sysexData.push_back(length);
 	sysexData.push_back(checksum);
 	this->sendSysEx(SYSEX_DYNAMIXEL_GET_REGISTER, sysexData);
+}
+
+//Transmits the command to get a byte of the servo register.
+void ofArduino::sendDynamixelConfigureServo(unsigned char servo, unsigned int cwlimit, unsigned int ccwlimit, unsigned int maxtorque, unsigned char delaytime) {
+	unsigned char cwlimit0 = getLowByte(cwlimit);
+	unsigned char cwlimit1 = getHighByte(cwlimit);
+	unsigned char ccwlimit0 = getLowByte(ccwlimit);
+	unsigned char ccwlimit1 = getHighByte(ccwlimit);
+	unsigned char maxtorque0 = getLowByte(maxtorque);
+	unsigned char maxtorque1 = getHighByte(maxtorque);
+	int checksum = (~(servo + cwlimit0 + cwlimit1 + ccwlimit0 + ccwlimit1 + maxtorque0 + maxtorque1 + delaytime)) & 0xFF;
+
+	//Send a sysex to let the arbotix know that we are starting a new synch move command
+	std::vector<unsigned char> sysexData;
+	sysexData.push_back(servo);
+	sysexData.push_back(cwlimit0);
+	sysexData.push_back(cwlimit1);
+	sysexData.push_back(ccwlimit0);
+	sysexData.push_back(ccwlimit1);
+	sysexData.push_back(maxtorque0);
+	sysexData.push_back(maxtorque1);
+	sysexData.push_back(delaytime);
+	sysexData.push_back(checksum);
+	this->sendSysEx(SYSEX_DYNAMIXEL_CONFIGURE_SERVO, sysexData);
+}
+
+//Tells an arbotix board to monitor a given servo and report back when it stops moving
+void ofArduino::sendDynamixelStopped(unsigned char servo) {
+	//Send a sysex to report a dynamixel servo
+	std::vector<unsigned char> sysexData;
+	sysexData.push_back(servo);
+	sysexData.push_back(1);
+	this->sendSysEx(SYSEX_DYNAMIXEL_STOPPED, sysexData);
 }
 
 void ofArduino::checkIncomingSysExMessage(unsigned char cmd) {

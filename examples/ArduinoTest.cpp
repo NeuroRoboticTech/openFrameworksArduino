@@ -77,14 +77,24 @@ void ArduinoTest::setupArduino(const int & version)
 	m_EDynamixelGetRegister = this->EDynamixelGetRegister.connect(boost::bind(&ArduinoTest::dynamixelGetRegister, this, _1, _2, _3));
 
 	//Set the CW and CCW limits to be in a valid range for this test
-	this->sendDynamixelSetRegister(TC_ID, 0x06, 2, 170);
-	this->sendDynamixelSetRegister(TC_ID, 0x08, 2, 800);
+	this->sendDynamixelSetRegister(TC_ID, 0x06, 2, 160);
+	this->sendDynamixelSetRegister(TC_ID, 0x08, 2, 810);
 
 	this->sendDynamixelGetRegister(TC_ID, 0x06, 2);
 	bool ret = this->waitForSysExMessage(SYSEX_DYNAMIXEL_GET_REGISTER, 2);
 	this->sendDynamixelGetRegister(TC_ID, 0x08, 2);
 	ret = this->waitForSysExMessage(SYSEX_DYNAMIXEL_GET_REGISTER, 2);
 	ret = this->waitForSysExMessage(SYSEX_DYNAMIXEL_SET_REGISTER, 2);
+
+	this->sendDynamixelConfigureServo(TC_ID, 170, 800, 1023, 1); 
+
+	//Test waiting for motor to stop
+	this->sendDynamixelMove(TC_ID, 512, 0);
+	boost::this_thread::sleep(boost::posix_time::milliseconds(200));
+
+	this->sendDynamixelMove(TC_ID, 200, 40);
+	this->sendDynamixelStopped(TC_ID);
+	ret = this->waitForSysExMessage(SYSEX_DYNAMIXEL_STOPPED, 10);
 
 	this->sendDynamixelServoAttach(TC_ID);
 	this->sendDynamixelServoAttach(CF_ID);

@@ -106,7 +106,9 @@
 #define SYSEX_DYNAMIXEL_TRANSMIT_ERROR						0x60 // Data packet for when there is a transmission error detected on the arbotix side.
 #define SYSEX_DYNAMIXEL_SET_REGISTER						0x59 // Data packet to set a specific register in a Dynamixel servo.
 #define SYSEX_DYNAMIXEL_GET_REGISTER						0x58 // Data packet to get a specific register in a Dynamixel servo.
-#define SYSEX_COMMANDER_DATA		                        0x57 // Data packet with commander remote control buttons pressed.
+#define SYSEX_DYNAMIXEL_CONFIGURE_SERVO						0x57 // Data packet to configure key motor params like cw and ccw limits.
+#define SYSEX_DYNAMIXEL_STOPPED								0x56 // Data packet to configure reporting of when a servo stops moving.
+#define SYSEX_COMMANDER_DATA								0x55 // Data packet with commander remote control buttons pressed.
 
 // ---- arduino constants (for Arduino NG and Diecimila)
 
@@ -422,6 +424,9 @@ class ARDUINO_PORT ofArduino{
 
 				boost::signals2::signal<void (const unsigned char, const unsigned char, const unsigned int)> EDynamixelGetRegister;
 				// triggered when the arbotix sends back a register value from one of the Dynamixel motors.
+
+				boost::signals2::signal<void (const int)> EDynamixelStopped;
+				// triggered when a dynamixel stopped packet is received, the servo ID is passed as an argument
 				
 				boost::signals2::signal<void (const int)> ECommanderDataReceived;
 				// triggered when a commander data update packet is received, the servo ID is passed as an argument
@@ -475,6 +480,12 @@ class ARDUINO_PORT ofArduino{
 				//Transmits the command to get a byte of the servo register.
 				void sendDynamixelGetRegister(unsigned char servo, unsigned char reg, unsigned char length);
 
+				//Transmits the command to get a byte of the servo register.
+				void sendDynamixelConfigureServo(unsigned char servo, unsigned int cwlimit, unsigned int ccwlimit, unsigned int maxtorque, unsigned char delaytime);
+
+				//Transmits the command to check if the servo is moving and when it is no longer moving send a signal back.
+				void sendDynamixelStopped(unsigned char servo);
+
 				bool waitForSysExMessage(unsigned char cmd, unsigned int timeout_sec = 1);
 
 		protected:
@@ -522,6 +533,7 @@ class ARDUINO_PORT ofArduino{
 				int _majorFirmwareVersion;
 				int _minorFirmwareVersion;
 				std::string _firmwareName;
+				bool _firmwareReceived;
 	
 				// sum of majorFirmwareVersion * 10 + minorFirmwareVersion
 				int _firmwareVersionSum;
