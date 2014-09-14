@@ -519,7 +519,7 @@ int ofSerial::readBytes(unsigned char * buffer, int length){
 		if(nRead < 0){
 			if ( errno == EAGAIN )
 				return OF_SERIAL_NO_DATA;
-			std::cout << "readBytes(): couldn't read from port: " << errno << " " << strerror(errno) << "\r\n";
+			//std::cout << "readBytes(): couldn't read from port: " << errno << " " << strerror(errno) << "\r\n";
 			return OF_SERIAL_ERROR;
 		}
 		return nRead;
@@ -530,7 +530,7 @@ int ofSerial::readBytes(unsigned char * buffer, int length){
 	#ifdef TARGET_WIN32
 		DWORD nRead = 0;
 		if (!ReadFile(hComm,buffer,length,&nRead,0)){
-			std::cout << "readBytes(): couldn't read from port" << "\r\n";
+			//std::cout << "readBytes(): couldn't read from port" << "\r\n";
 			return OF_SERIAL_ERROR;
 		}
 		return (int)nRead;
@@ -557,7 +557,7 @@ bool ofSerial::writeByte(unsigned char singleByte){
 		if(numWritten <= 0 ){
 			if ( errno == EAGAIN )
 				return 0;
-			 std::cout << "writeByte(): couldn't write to port: " << errno << " " << strerror(errno) << "\r\n";
+			 //std::cout << "writeByte(): couldn't write to port: " << errno << " " << strerror(errno) << "\r\n";
 			 //return OF_SERIAL_ERROR; // this looks wrong.
 			 return false;
 		}
@@ -571,7 +571,7 @@ bool ofSerial::writeByte(unsigned char singleByte){
 	#ifdef TARGET_WIN32
 		DWORD written = 0;
 		if(!WriteFile(hComm, tmpByte, 1, &written,0)){
-			 std::cout << "writeByte(): couldn't write to port" << "\r\n";
+			 //std::cout << "writeByte(): couldn't write to port" << "\r\n";
 			 //return OF_SERIAL_ERROR; // this looks wrong.
 			 return false;
 		}
