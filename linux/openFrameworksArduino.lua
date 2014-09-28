@@ -34,11 +34,11 @@ solution "openFrameworksArduino"
 			flags   { "Symbols", "SEH" }
 			targetdir ("Debug")
 			targetname ("ArduinoTestD")
-			links { "openFrameworksArduino", "boost_thread" }
+			links { "openFrameworksArduino", "boost_thread", "boost_system" }
 	 
 		configuration { "Release", "linux" }
 			defines { "NDEBUG" }
 			flags   { "Optimize", "SEH" }
 			targetdir ("Release")
 			targetname ("ArduinoTest")
-			links { "openFrameworksArduino", "boost_thread" }
+			links { "openFrameworksArduino", "boost_thread", "boost_system" }
