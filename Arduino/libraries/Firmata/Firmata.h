@@ -72,8 +72,7 @@
 #define SERVO                   0x04 // digital pin in Servo output mode
 #define SHIFT                   0x05 // shiftIn/shiftOut mode
 #define I2C                     0x06 // pin included in I2C setup
-#define INPUT_PULLUP            0x07 // enable pullup resistsor
-#define TOTAL_PIN_MODES         8
+#define TOTAL_PIN_MODES         7
 
 extern "C" {
 // callback function types

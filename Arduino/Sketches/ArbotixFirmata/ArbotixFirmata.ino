@@ -1240,11 +1240,19 @@ void setup()
 
   #ifdef DEBUG_SERIAL 
     debugSerial.println("Setup finished");
+    debugSerial.print("Firmata Version: ");
+    debugSerial.print(FIRMATA_MAJOR_VERSION); debugSerial.print(".");
+    debugSerial.print(FIRMATA_MINOR_VERSION); debugSerial.print(".");
+    debugSerial.println(FIRMATA_BUGFIX_VERSION);
   #endif
 #else 
   #ifdef DEBUG_SERIAL
     debugSerial.begin(38400);
     debugSerial.println("Setup finished");
+    debugSerial.print("Firmata Version: ");
+    debugSerial.print(FIRMATA_MAJOR_VERSION); debugSerial.print(".");
+    debugSerial.print(FIRMATA_MINOR_VERSION); debugSerial.print(".");
+    debugSerial.println(FIRMATA_BUGFIX_VERSION);
   #endif
 #endif
 
