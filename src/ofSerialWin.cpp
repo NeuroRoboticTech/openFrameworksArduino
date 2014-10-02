@@ -1,16 +1,9 @@
-#if TARGET_WIN32
 
 #include "StdAfx.h"
 #include "ofSerialWin.h"
-////#include "ofUtils.h"
 #include "ofTypes.h"
 
-#if defined( TARGET_OSX ) || defined( TARGET_LINUX )
-	#include <sys/ioctl.h>
-	#include <getopt.h>
-	#include <dirent.h>
-#endif
-
+#ifdef TARGET_WIN32
 
 #include <fcntl.h>
 #include <errno.h>
@@ -18,12 +11,6 @@
 #include <algorithm>
 
 #pragma comment (lib, "Setupapi.lib")
-
-//---------------------------------------------
-#ifdef TARGET_WIN32
-//---------------------------------------------
-
-
 
 //------------------------------------
    // needed for serial bus enumeration:
@@ -96,30 +83,20 @@ void ofSerial::enumerateWin32Ports(){
 }
 
 
-//---------------------------------------------
-#endif
-//---------------------------------------------
-
-
 
 //----------------------------------------------------------------
 ofSerial::ofSerial(){
 
-	//---------------------------------------------
-	#ifdef TARGET_WIN32
-	//---------------------------------------------
-		nPorts 				= 0;
-		bPortsEnumerated 	= false;
+	nPorts 				= 0;
+	bPortsEnumerated 	= false;
 
-		portNamesShort = new char * [MAX_SERIAL_PORTS];
-		portNamesFriendly = new char * [MAX_SERIAL_PORTS];
-		for (int i = 0; i < MAX_SERIAL_PORTS; i++){
-			portNamesShort[i] = new char[10];
-			portNamesFriendly[i] = new char[MAX_PATH];
-		}
-	//---------------------------------------------
-	#endif
-	//---------------------------------------------
+	portNamesShort = new char * [MAX_SERIAL_PORTS];
+	portNamesFriendly = new char * [MAX_SERIAL_PORTS];
+	for (int i = 0; i < MAX_SERIAL_PORTS; i++){
+		portNamesShort[i] = new char[10];
+		portNamesFriendly[i] = new char[MAX_PATH];
+	}
+
 	bInited = false;
 }
 
@@ -130,22 +107,15 @@ ofSerial::~ofSerial(){
 
 
 
-	//---------------------------------------------
-	#ifdef TARGET_WIN32
-	//---------------------------------------------
-		nPorts 				= 0;
-		bPortsEnumerated 	= false;
+	nPorts 				= 0;
+	bPortsEnumerated 	= false;
 
-		for (int i = 0; i < MAX_SERIAL_PORTS; i++) {
-			delete [] portNamesShort[i];
-			delete [] portNamesFriendly[i];
-		}
-		delete [] portNamesShort;
-		delete [] portNamesFriendly;
-
-	//---------------------------------------------
-	#endif
-	//---------------------------------------------
+	for (int i = 0; i < MAX_SERIAL_PORTS; i++) {
+		delete [] portNamesShort[i];
+		delete [] portNamesFriendly[i];
+	}
+	delete [] portNamesShort;
+	delete [] portNamesFriendly;
 
 	bInited = false;
 }
@@ -165,67 +135,12 @@ void ofSerial::buildDeviceList(){
 
 	std::vector <std::string> prefixMatch;
 
-	#ifdef TARGET_OSX
-		prefixMatch.push_back("cu.");
-		prefixMatch.push_back("tty.");
-	#endif
-	#ifdef TARGET_LINUX
-		#ifdef TARGET_RASPBERRY_PI
-			prefixMatch.push_back("ttyACM");
-		#endif
-
-		prefixMatch.push_back("ttyS");
-		prefixMatch.push_back("ttyUSB");
-		prefixMatch.push_back("rfc");
-	#endif
-
-
-	#if defined( TARGET_OSX ) || defined( TARGET_LINUX )
-
-	DIR *dir;
-	struct dirent *entry;
-	dir = opendir("/dev");
-
-	std::string deviceName	= "";
-	int deviceCount		= 0;
-
-	if (dir == NULL){
-		std::cout << "buildDeviceList(): error listing devices in /dev" << "\r\n";
-	} else {
-		//for each device
-		while((entry = readdir(dir)) != NULL){
-			deviceName = (char *)entry->d_name;
-
-			//we go through the prefixes
-			for(int k = 0; k < (int)prefixMatch.size(); k++){
-				//if the device name is longer than the prefix
-				if( deviceName.size() > prefixMatch[k].size() ){
-					//do they match ?
-					if( deviceName.substr(0, prefixMatch[k].size()) == prefixMatch[k].c_str() ){
-						devices.push_back(ofSerialDeviceInfo("/dev/"+deviceName, deviceName, deviceCount));
-						deviceCount++;
-						break;
-					}
-				}
-			}
-		}
-		closedir(dir);
-	}
-
-	#endif
-
-	//---------------------------------------------
-	#ifdef TARGET_WIN32
-	//---------------------------------------------
 	enumerateWin32Ports();
 	std::cout << "found " << nPorts << " devices" << "\r\n";
 	for (int i = 0; i < nPorts; i++){
 		//NOTE: we give the short port name for both as that is what the user should pass and the short name is more friendly
 		devices.push_back(ofSerialDeviceInfo(std::string(portNamesShort[i]), std::string(portNamesShort[i]), i));
 	}
-	//---------------------------------------------
-	#endif
-    //---------------------------------------------
 
 	//here we sort the device to have the aruino ones first.
 	partition(devices.begin(), devices.end(), isDeviceArduino);
@@ -260,29 +175,13 @@ void ofSerial::enumerateDevices(){
 //----------------------------------------------------------------
 void ofSerial::close(){
 
-	//---------------------------------------------
-	#ifdef TARGET_WIN32
-	//---------------------------------------------
-		if (bInited){
-			std::cout << "closing serial" << "\r\n";
-			SetCommTimeouts(hComm,&oldTimeout);
-			CloseHandle(hComm);
-			hComm 		= INVALID_HANDLE_VALUE;
-			bInited 	= false;
-		}
-	//---------------------------------------------
-    #else
-    //---------------------------------------------
-    	if (bInited){
-			std::cout << "closing serial" << "\r\n";
-    		tcsetattr(fd,TCSANOW,&oldoptions);
-    		::close(fd);
-    		bInited = false;
-    	}
-    	// [CHECK] -- anything else need to be reset?
-    //---------------------------------------------
-    #endif
-    //---------------------------------------------
+	if (bInited){
+		std::cout << "closing serial" << "\r\n";
+		SetCommTimeouts(hComm,&oldTimeout);
+		CloseHandle(hComm);
+		hComm 		= INVALID_HANDLE_VALUE;
+		bInited 	= false;
+	}
 
 }
 
@@ -309,91 +208,6 @@ bool ofSerial::setup(std::string portName, int baud){
 
 	std::cout << "setup serial" << "\r\n";
 	bInited = false;
-
-	//---------------------------------------------
-	#if defined( TARGET_OSX ) || defined( TARGET_LINUX )
-	//---------------------------------------------
-
-		//lets account for the name being passed in instead of the device path
-		if( portName.size() > 5 && portName.substr(0, 5) != "/dev/" ){
-			portName = "/dev/" + portName;
-		}
-
-	    std::cout << "opening " << portName << " @ " << baud << " bps" << "\r\n";
-		fd = open(portName.c_str(), O_RDWR | O_NOCTTY | O_NONBLOCK);
-		if(fd == -1){
-			std::cout << "unable to open " << portName << "\r\n";
-			return false;
-		}
-
-		struct termios options;
-		tcgetattr(fd,&oldoptions);
-		options = oldoptions;
-		switch(baud){
-		   case 300: 	cfsetispeed(&options,B300);
-						cfsetospeed(&options,B300);
-						break;
-		   case 1200: 	cfsetispeed(&options,B1200);
-						cfsetospeed(&options,B1200);
-						break;
-		   case 2400: 	cfsetispeed(&options,B2400);
-						cfsetospeed(&options,B2400);
-						break;
-		   case 4800: 	cfsetispeed(&options,B4800);
-						cfsetospeed(&options,B4800);
-						break;
-		   case 9600: 	cfsetispeed(&options,B9600);
-						cfsetospeed(&options,B9600);
-						break;
-		   case 14400: 	cfsetispeed(&options,B14400);
-						cfsetospeed(&options,B14400);
-						break;
-		   case 19200: 	cfsetispeed(&options,B19200);
-						cfsetospeed(&options,B19200);
-						break;
-		   case 28800: 	cfsetispeed(&options,B28800);
-						cfsetospeed(&options,B28800);
-						break;
-		   case 38400: 	cfsetispeed(&options,B38400);
-						cfsetospeed(&options,B38400);
-						break;
-		   case 57600:  cfsetispeed(&options,B57600);
-						cfsetospeed(&options,B57600);
-						break;
-		   case 115200: cfsetispeed(&options,B115200);
-						cfsetospeed(&options,B115200);
-						break;
-		   case 230400: cfsetispeed(&options,B230400);
-						cfsetospeed(&options,B230400);
-						break;
-
-			default:	cfsetispeed(&options,B9600);
-						cfsetospeed(&options,B9600);
-						std::cout << "setup(): cannot set " << baud << " bps, setting to 9600" << "\r\n";
-						break;
-		}
-
-		options.c_cflag |= (CLOCAL | CREAD);
-		options.c_cflag &= ~PARENB;
-		options.c_cflag &= ~CSTOPB;
-		options.c_cflag &= ~CSIZE;
-		options.c_iflag &= (tcflag_t) ~(INLCR | IGNCR | ICRNL | IGNBRK);
-		options.c_oflag &= (tcflag_t) ~(OPOST);
-		options.c_cflag |= CS8;
-		tcsetattr(fd,TCSANOW,&options);
-
-		bInited = true;
-		std::cout << "opened " << portName << " sucessfully @ " << baud << " bps" << "\r\n";
-
-	    return true;
-	//---------------------------------------------
-    #endif
-    //---------------------------------------------
-
-
-    //---------------------------------------------
-	#ifdef TARGET_WIN32
-	//---------------------------------------------
 
 	char pn[sizeof(portName)];
 	int num;
@@ -461,9 +275,6 @@ bool ofSerial::setup(std::string portName, int baud){
 
 	bInited = true;
 	return true;
-	//---------------------------------------------
-	#endif
-	//---------------------------------------------
 }
 
 
@@ -475,36 +286,13 @@ int ofSerial::writeBytes(unsigned char * buffer, int length){
 		return OF_SERIAL_ERROR;
 	}
 
-	//---------------------------------------------
-	#if defined( TARGET_OSX ) || defined( TARGET_LINUX )
-	    int numWritten = write(fd, buffer, length);
-		if(numWritten <= 0){
-			if ( errno == EAGAIN )
-				return 0;
-			//std::cout << "writeBytes(): couldn't write to port: " << errno << " " << strerror(errno) << "\r\n";
+	DWORD written;
+	if(!WriteFile(hComm, buffer, length, &written,0)){
+			//std::cout << "writeBytes(): couldn't write to port" << "\r\n";
 			return OF_SERIAL_ERROR;
-		}
-
-		//std::cout << "wrote " << (int) numWritten << " bytes" << "\r\n";
-
-	    return numWritten;
-    #endif
-    //---------------------------------------------
-
-    //---------------------------------------------
-	#ifdef TARGET_WIN32
-		DWORD written;
-		if(!WriteFile(hComm, buffer, length, &written,0)){
-			 //std::cout << "writeBytes(): couldn't write to port" << "\r\n";
-			 return OF_SERIAL_ERROR;
-		}
-		//std::cout <<  "wrote " << (int) written << " bytes" << "\r\n";
-		return (int)written;
-	#else
-		return 0;
-	#endif
-	//---------------------------------------------
-
+	}
+	//std::cout <<  "wrote " << (int) written << " bytes" << "\r\n";
+	return (int)written;
 }
 
 //----------------------------------------------------------------
@@ -515,29 +303,12 @@ int ofSerial::readBytes(unsigned char * buffer, int length){
 		return OF_SERIAL_ERROR;
 	}
 
-	//---------------------------------------------
-	#if defined( TARGET_OSX ) || defined( TARGET_LINUX )
-		int nRead = read(fd, buffer, length);
-		if(nRead < 0){
-			if ( errno == EAGAIN )
-				return OF_SERIAL_NO_DATA;
-			//std::cout << "readBytes(): couldn't read from port: " << errno << " " << strerror(errno) << "\r\n";
-			return OF_SERIAL_ERROR;
-		}
-		return nRead;
-    #endif
-    //---------------------------------------------
-
-    //---------------------------------------------
-	#ifdef TARGET_WIN32
-		DWORD nRead = 0;
-		if (!ReadFile(hComm,buffer,length,&nRead,0)){
-			//std::cout << "readBytes(): couldn't read from port" << "\r\n";
-			return OF_SERIAL_ERROR;
-		}
-		return (int)nRead;
-	#endif
-	//---------------------------------------------
+	DWORD nRead = 0;
+	if (!ReadFile(hComm,buffer,length,&nRead,0)){
+		//std::cout << "readBytes(): couldn't read from port" << "\r\n";
+		return OF_SERIAL_ERROR;
+	}
+	return (int)nRead;
 }
 
 //----------------------------------------------------------------
@@ -552,38 +323,16 @@ bool ofSerial::writeByte(unsigned char singleByte){
 	unsigned char tmpByte[1];
 	tmpByte[0] = singleByte;
 
-	//---------------------------------------------
-	#if defined( TARGET_OSX ) || defined( TARGET_LINUX )
-	    int numWritten = 0;
-	    numWritten = write(fd, tmpByte, 1);
-		if(numWritten <= 0 ){
-			if ( errno == EAGAIN )
-				return 0;
-			 //std::cout << "writeByte(): couldn't write to port: " << errno << " " << strerror(errno) << "\r\n";
-			 //return OF_SERIAL_ERROR; // this looks wrong.
-			 return false;
-		}
-		//std::cout << "wrote byte" << "\r\n";
+	DWORD written = 0;
+	if(!WriteFile(hComm, tmpByte, 1, &written,0)){
+			//std::cout << "writeByte(): couldn't write to port" << "\r\n";
+			//return OF_SERIAL_ERROR; // this looks wrong.
+			return false;
+	}
 
-		return (numWritten > 0 ? true : false);
-    #endif
-    //---------------------------------------------
+	//std::cout << "wrote byte" << "\r\n";
 
-    //---------------------------------------------
-	#ifdef TARGET_WIN32
-		DWORD written = 0;
-		if(!WriteFile(hComm, tmpByte, 1, &written,0)){
-			 //std::cout << "writeByte(): couldn't write to port" << "\r\n";
-			 //return OF_SERIAL_ERROR; // this looks wrong.
-			 return false;
-		}
-
-		//std::cout << "wrote byte" << "\r\n";
-
-		return ((int)written > 0 ? true : false);
-	#endif
-	//---------------------------------------------
-
+	return ((int)written > 0 ? true : false);
 }
 
 //----------------------------------------------------------------
@@ -597,29 +346,11 @@ int ofSerial::readByte(){
 	unsigned char tmpByte[1];
 	memset(tmpByte, 0, 1);
 
-	//---------------------------------------------
-	#if defined( TARGET_OSX ) || defined( TARGET_LINUX )
-		int nRead = read(fd, tmpByte, 1);
-		if(nRead < 0){
-			if ( errno == EAGAIN )
-				return OF_SERIAL_NO_DATA;
-			std::cout << "readByte(): couldn't read from port: " << errno << " " << strerror(errno) << "\r\n";
-            return OF_SERIAL_ERROR;
-		}
-		if(nRead == 0)
-			return OF_SERIAL_NO_DATA;
-    #endif
-    //---------------------------------------------
-
-    //---------------------------------------------
-	#ifdef TARGET_WIN32
-		DWORD nRead;
-		if (!ReadFile(hComm, tmpByte, 1, &nRead, 0)){
-			std::cout << "readByte(): couldn't read from port" << "\r\n";
-			return OF_SERIAL_ERROR;
-		}
-	#endif
-	//---------------------------------------------
+	DWORD nRead;
+	if (!ReadFile(hComm, tmpByte, 1, &nRead, 0)){
+		std::cout << "readByte(): couldn't read from port" << "\r\n";
+		return OF_SERIAL_ERROR;
+	}
 
 	return (int)(tmpByte[0]);
 }
@@ -635,27 +366,12 @@ void ofSerial::flush(bool flushIn, bool flushOut){
 
 	int flushType = 0;
 
-	//---------------------------------------------
-	#if defined( TARGET_OSX ) || defined( TARGET_LINUX )
-		if( flushIn && flushOut) flushType = TCIOFLUSH;
-		else if(flushIn) flushType = TCIFLUSH;
-		else if(flushOut) flushType = TCOFLUSH;
-		else return;
+	if( flushIn && flushOut) flushType = PURGE_TXCLEAR | PURGE_RXCLEAR;
+	else if(flushIn) flushType = PURGE_RXCLEAR;
+	else if(flushOut) flushType = PURGE_TXCLEAR;
+	else return;
 
-		tcflush(fd, flushType);
-    #endif
-    //---------------------------------------------
-
-    //---------------------------------------------
-	#ifdef TARGET_WIN32
-		if( flushIn && flushOut) flushType = PURGE_TXCLEAR | PURGE_RXCLEAR;
-		else if(flushIn) flushType = PURGE_RXCLEAR;
-		else if(flushOut) flushType = PURGE_TXCLEAR;
-		else return;
-
-		PurgeComm(hComm, flushType);
-	#endif
-	//---------------------------------------------
+	PurgeComm(hComm, flushType);
 }
 
 void ofSerial::drain(){
@@ -663,10 +379,6 @@ void ofSerial::drain(){
 		std::cout << "drain(): serial not inited" << "\r\n";
 		return;
     }
-
-    #if defined( TARGET_OSX ) || defined( TARGET_LINUX )
-        tcdrain( fd );
-    #endif
 }
 
 //-------------------------------------------------------------
@@ -679,27 +391,17 @@ int ofSerial::available(){
 
 	int numBytes = 0;
 
-	//---------------------------------------------
-	#if defined( TARGET_OSX ) || defined( TARGET_LINUX )
-		ioctl(fd,FIONREAD,&numBytes);
-	#endif
-    //---------------------------------------------
-
-    //---------------------------------------------
-	#ifdef TARGET_WIN32
 	COMSTAT stat;
-       	DWORD err;
-       	if(hComm!=INVALID_HANDLE_VALUE){
-           if(!ClearCommError(hComm, &err, &stat)){
-               numBytes = 0;
-           } else {
-               numBytes = stat.cbInQue;
-           }
-       	} else {
-           numBytes = 0;
-       	}
-	#endif
-    //---------------------------------------------
+    DWORD err;
+    if(hComm!=INVALID_HANDLE_VALUE){
+        if(!ClearCommError(hComm, &err, &stat)){
+            numBytes = 0;
+        } else {
+            numBytes = stat.cbInQue;
+        }
+    } else {
+        numBytes = 0;
+    }
 
 	return numBytes;
 }

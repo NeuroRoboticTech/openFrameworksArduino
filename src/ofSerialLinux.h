@@ -1,9 +1,10 @@
 #pragma once
 
-//#if defined( TARGET_OSX ) || defined( TARGET_LINUX )
 
 #include "ofConstants.h"
 #include "ofTypes.h"
+
+#if defined( TARGET_OSX ) || defined( TARGET_LINUX )
 
 #include <termios.h>
 #include <stdint.h>
@@ -105,5 +106,5 @@ class ARDUINO_PORT ofSerial {
 // and non-blocking instances)
 // ----------------------------
 
-//#endif
+#endif
 

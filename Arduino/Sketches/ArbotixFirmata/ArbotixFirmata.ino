@@ -1220,6 +1220,13 @@ void checkCommander() {
 }
 #endif 
 
+#ifdef DEBUG_SERIAL
+void systemDebugCallback(char *debug)
+{
+    debugSerial.print(debug);
+}
+#endif
+
 void setup() 
 {  
   Firmata.setFirmwareVersion(FIRMATA_MAJOR_VERSION, FIRMATA_MINOR_VERSION);
@@ -1231,6 +1238,10 @@ void setup()
   Firmata.attach(SET_PIN_MODE, setPinModeCallback);
   Firmata.attach(START_SYSEX, sysexCallback);
   Firmata.attach(SYSTEM_RESET, systemResetCallback);
+
+#if DEBUG_SERIAL == 1 && DEBUG_DATA == 0x54 
+  Firmata.attach(DEBUG_DATA, systemDebugCallback);
+#endif
 
   Firmata.begin(115200); //57600 256000 230400 115200
   systemResetCallback();  // reset to default config

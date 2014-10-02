@@ -50,6 +50,17 @@ FirmataClass::FirmataClass()
 {
   firmwareVersionCount = 0;
   firmwareVersionVector = 0;
+
+  currentAnalogCallback = NULL;
+  currentDigitalCallback = NULL;
+  currentReportAnalogCallback = NULL;
+  currentReportDigitalCallback = NULL;
+  currentPinModeCallback = NULL;
+  currentSystemResetCallback = NULL;
+  currentStringCallback = NULL;
+  currentSysexCallback = NULL;
+  debugCallback = NULL;
+
   systemReset();
 }
 
@@ -105,6 +116,8 @@ void FirmataClass::printFirmwareVersion(void)
   byte i;
 
   if(firmwareVersionCount) { // make sure that the name has been set before reporting
+    printDebug("Sending firmware\n");
+
     startSysex();
     FirmataSerial->write(REPORT_FIRMWARE);
     FirmataSerial->write(firmwareVersionVector[0]); // major version number
@@ -120,6 +133,8 @@ void FirmataClass::setFirmwareNameAndVersion(const char *name, byte major, byte 
 {
   const char *filename;
   char *extension;
+
+  printDebug("Sending firmware name and version\n");
 
   // parse out ".cpp" and "applet/" that comes from using __FILE__
   extension = strstr(name, ".cpp");
@@ -267,9 +282,11 @@ void FirmataClass::processInput(void)
       sysexBytesRead = 0;
       break;
     case SYSTEM_RESET:
+	  printDebug("Recieved SYSTEM_RESET\n");
       systemReset();
       break;
     case REPORT_VERSION:
+	  printDebug("Recieved REPORT_VERSION\n");
       Firmata.printVersion();
       break;
     }
@@ -375,6 +392,7 @@ void FirmataClass::attach(byte command, stringCallbackFunction newFunction)
 {
   switch(command) {
   case STRING_DATA: currentStringCallback = newFunction; break;
+  case DEBUG_DATA: debugCallback = newFunction; break;
   }
 }
 
@@ -389,6 +407,7 @@ void FirmataClass::detach(byte command)
   case SYSTEM_RESET: currentSystemResetCallback = NULL; break;
   case STRING_DATA: currentStringCallback = NULL; break;
   case START_SYSEX: currentSysexCallback = NULL; break;
+  case DEBUG_DATA: debugCallback = NULL; break;
   default:
     attach(command, (callbackFunction)NULL);
   }
@@ -422,6 +441,7 @@ void FirmataClass::detach(byte command)
 void FirmataClass::systemReset(void)
 {
   byte i;
+  printDebug("System Reset\n");
 
   waitForData = 0; // this flag says the next serial input will be data
   executeMultiByteCommand = 0; // execute this after getting multi-byte data
@@ -456,6 +476,11 @@ void FirmataClass::strobeBlinkPin(int count, int onInterval, int offInterval)
   }
 }
 
+void FirmataClass::printDebug(char* string)
+{
+	if(debugCallback)
+		debugCallback(string);
+}
 
 // make one instance for the user to use
 FirmataClass Firmata;

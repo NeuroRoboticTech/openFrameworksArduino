@@ -1,8 +1,9 @@
-//#if defined( TARGET_OSX ) || defined( TARGET_LINUX )
 
 #include "StdAfx.h"
 #include "ofSerialLinux.h"
 #include "ofTypes.h"
+
+#if defined( TARGET_OSX ) || defined( TARGET_LINUX )
 
 #include <sys/types.h>
 #include <fcntl.h>
@@ -474,4 +475,4 @@ bool ofSerial::isInitialized() const{
 	return port_is_open;
 }
 
-//#endif
+#endif

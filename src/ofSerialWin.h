@@ -1,25 +1,21 @@
 #pragma once
-
-#if TARGET_WIN32
-
+\
 #include "ofConstants.h"
 #include "ofTypes.h"
 
-#if defined( TARGET_OSX ) || defined( TARGET_LINUX ) || defined (TARGET_ANDROID)
-	#include <termios.h>
-#else
-	#include <winbase.h>
-	#include <tchar.h>
-	#include <iostream>
-	#include <string.h>
-	#include <setupapi.h>
-	#include <regstr.h>
-	#define MAX_SERIAL_PORTS 256
-	 #include <winioctl.h>
-	#ifdef __MINGW32__
-			#define INITGUID
-			#include <initguid.h> // needed for dev-c++ & DEFINE_GUID
-    #endif
+#ifdef TARGET_WIN32
+
+#include <winbase.h>
+#include <tchar.h>
+#include <iostream>
+#include <string.h>
+#include <setupapi.h>
+#include <regstr.h>
+#define MAX_SERIAL_PORTS 256
+	#include <winioctl.h>
+#ifdef __MINGW32__
+		#define INITGUID
+		#include <initguid.h> // needed for dev-c++ & DEFINE_GUID
 #endif
 
 
@@ -66,20 +62,14 @@ class ARDUINO_PORT ofSerial {
 
 			bool 	bInited;
 
-			#ifdef TARGET_WIN32
+			char 		** portNamesShort;//[MAX_SERIAL_PORTS];
+			char 		** portNamesFriendly; ///[MAX_SERIAL_PORTS];
+			HANDLE  	hComm;		// the handle to the serial port pc
+			int	 		nPorts;
+			bool 		bPortsEnumerated;
+			void 		enumerateWin32Ports();
+			COMMTIMEOUTS 	oldTimeout;	// we alter this, so keep a record
 
-				char 		** portNamesShort;//[MAX_SERIAL_PORTS];
-				char 		** portNamesFriendly; ///[MAX_SERIAL_PORTS];
-				HANDLE  	hComm;		// the handle to the serial port pc
-				int	 		nPorts;
-				bool 		bPortsEnumerated;
-				void 		enumerateWin32Ports();
-				COMMTIMEOUTS 	oldTimeout;	// we alter this, so keep a record
-
-			#else
-				int 		fd;			// the handle to the serial port mac
-				struct 	termios oldoptions;
-			#endif
 
 };
 

@@ -6,7 +6,11 @@ int main(int argc, char** argv)
 	bool bForward = false;
 	int iMotorCount = 0;
 
-	if(!ard.connect("ttyUSB0", 57600)) //38400 57600 115200 256000
+#ifdef TARGET_WIN32
+	if(!ard.connect("COM6", 230400)) //38400 57600 115200 230400 256000
+#else
+	if(!ard.connect("ttyUSB0", 57600)) //38400 57600 115200 230400 256000
+#endif
 	{
 		std::cout << "Failed to connect to arduino!";
 		return -1;

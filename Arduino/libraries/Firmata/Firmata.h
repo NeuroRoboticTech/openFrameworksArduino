@@ -20,8 +20,8 @@
  * software can test whether it will be compatible with the currently
  * installed firmware. */
 #define FIRMATA_MAJOR_VERSION   2 // for non-compatible changes
-#define FIRMATA_MINOR_VERSION   3 // for backwards compatible changes
-#define FIRMATA_BUGFIX_VERSION  6 // for bugfix releases
+#define FIRMATA_MINOR_VERSION   4 // for backwards compatible changes
+#define FIRMATA_BUGFIX_VERSION  0 // for bugfix releases
 
 #define MAX_DATA_BYTES 32 // max number of data bytes in non-Sysex messages
 
@@ -41,6 +41,7 @@
 
 // extended command set using sysex (0-127/0x00-0x7F)
 /* 0x00-0x0F reserved for user-defined commands */
+#define DEBUG_DATA	            0x54 // Sets the debug callback 
 #define SERVO_CONFIG            0x70 // set max angle, minPulse, maxPulse, freq
 #define STRING_DATA             0x71 // a string message with 14-bits per char
 #define SHIFT_DATA              0x75 // a bitstream to/from a shift register
@@ -116,6 +117,8 @@ public:
     void attach(byte command, stringCallbackFunction newFunction);
     void attach(byte command, sysexCallbackFunction newFunction);
     void detach(byte command);
+	
+	void printDebug(char* string);
 
 private:
     Stream *FirmataSerial;
@@ -139,6 +142,7 @@ private:
     systemResetCallbackFunction currentSystemResetCallback;
     stringCallbackFunction currentStringCallback;
     sysexCallbackFunction currentSysexCallback;
+    stringCallbackFunction debugCallback;
 
 /* private methods ------------------------------ */
     void processSysexMessage(void);
