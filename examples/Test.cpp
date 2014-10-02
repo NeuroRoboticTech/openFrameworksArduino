@@ -1,12 +1,12 @@
 #include "ArduinoTest.h"
 
-int main(int argc, char** argv) 
+int main(int argc, char** argv)
 {
 	ArduinoTest ard;
 	bool bForward = false;
 	int iMotorCount = 0;
 
-	if(!ard.connect("COM6", 115200)) // 57600  256000 
+	if(!ard.connect("ttyUSB0", 57600)) //38400 57600 115200 256000
 	{
 		std::cout << "Failed to connect to arduino!";
 		return -1;
@@ -15,15 +15,18 @@ int main(int argc, char** argv)
 	//Need to do this to init the pins, get the firmware version, and  call setupArduino.
 	//Will stay in update loop looking for signal. When it arrives Setup will be called
 	//and we can start processing.
-	ard.sendReset();
+	//ard.sendReset();
+	//ard.sendProtocolVersionRequest();
 	ard.sendFirmwareVersionRequest();
 
-	for(int i=0; i<1000000; i++, iMotorCount++)
+    //ard.setupArduino(1);
+
+	while(1) //for(int i=0; i<1000000; i++, iMotorCount++)
 	{
 		//std::cout << "i: " << i << "\r\n";
 
 		ard.update();
-		boost::this_thread::sleep(boost::posix_time::milliseconds(5));
+		//boost::this_thread::sleep(boost::posix_time::milliseconds(5));
 
 		//if(ard.m_bSetupArduino && iMotorCount > 100)
 		//{

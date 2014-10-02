@@ -46,8 +46,10 @@
 		<Unit filename="../src/ofArduino.cpp" />
 		<Unit filename="../src/ofArduino.h" />
 		<Unit filename="../src/ofConstants.h" />
-		<Unit filename="../src/ofSerial.cpp" />
-		<Unit filename="../src/ofSerial.h" />
+		<Unit filename="../src/ofSerialLinux.cpp" />
+		<Unit filename="../src/ofSerialLinux.h" />
+		<Unit filename="../src/ofSerialWin.cpp" />
+		<Unit filename="../src/ofSerialWin.h" />
 		<Unit filename="../src/ofTypes.h" />
 		<Extensions>
 			<code_completion />
