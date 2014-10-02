@@ -1,8 +1,8 @@
 /*
  * Copyright 2007-2008 (c) Erik Sjodin, eriksjodin.net
- * Adapted from Wiring version 2011 (c) Carlos Mario Rodriguez and 
+ * Adapted from Wiring version 2011 (c) Carlos Mario Rodriguez and
  * Hernando Barragan by Dominic Amato
- * Adapted from Arbotix Firmata version 2014 (c) David Cofer 
+ * Adapted from Arbotix Firmata version 2014 (c) David Cofer
  * NeuroRoboticTechnologies, LLC
  *
  * Permission is hereby granted, free of charge, to any person
@@ -35,7 +35,8 @@
 #include <boost/timer.hpp>
 #include <boost/signals2/signal.hpp>
 #include <boost/bind.hpp>
-#include "ofSerial.h"
+#include "ofSerialWin.h"
+#include "ofSerialLinux.h"
 
 /*
  * Version numbers for the protocol. The protocol is still changing, so these
@@ -68,7 +69,7 @@
 #define SHIFT											0x05 // shiftIn/shiftOut mode
 #define I2C												0x06 // pin included in I2C setup
 #define FIRMATA_INPUT_PULLUP							0x07 // pull-up resistors enabled
-#define TOTAL_PIN_MODES 8 
+#define TOTAL_PIN_MODES 8
 // extended command set using SysEx (0-127/0x00-0x7F)
 /* 0x00-0x0F reserved for custom commands */
 #define FIRMATA_SYSEX_SERVO_CONFIG                      0x70 // set max angle, minPulse, maxPulse, freq
@@ -85,7 +86,7 @@
 #define ANALOG_MAPPING_QUERY							0x69 // ask for mapping of analog to pin numbers
 #define ANALOG_MAPPING_RESPONSE							0x6A // reply with mapping info
 #define FIRMATA_SYSEX_REPORT_FIRMWARE					0x79 // report name and version of the firmware
-#define SAMPLING_INTERVAL								0x7A // set the poll rate of the main loop 
+#define SAMPLING_INTERVAL								0x7A // set the poll rate of the main loop
 #define FIRMATA_SYSEX_NON_REALTIME                      0x7E // MIDI Reserved for non-realtime messages
 #define FIRMATA_SYSEX_REALTIME                          0x7F // MIDI Reserved for realtime messages
 
@@ -360,14 +361,14 @@ class ARDUINO_PORT ofArduino{
 
 				std::list<std::string>* getStringHistory();
 				// returns a pointer to the string history
-				
+
 				int makeWord(unsigned char low, unsigned char  high);
 				//Combines two bytes into a word
 
-				unsigned char  getLowByte(int val); 
+				unsigned char  getLowByte(int val);
 				//Gets the low byte of an int
 
-				unsigned char  getHighByte(int val); 
+				unsigned char  getHighByte(int val);
 				//gets the high byte of an int.
 
 				ofDynamixelData _dynamixelServos[MAX_DYNAMIXEL_SERVOS];
@@ -427,7 +428,7 @@ class ARDUINO_PORT ofArduino{
 
 				boost::signals2::signal<void (const int)> EDynamixelStopped;
 				// triggered when a dynamixel stopped packet is received, the servo ID is passed as an argument
-				
+
 				boost::signals2::signal<void (const int)> ECommanderDataReceived;
 				// triggered when a commander data update packet is received, the servo ID is passed as an argument
 
@@ -469,8 +470,8 @@ class ARDUINO_PORT ofArduino{
 				//Transmits the command to move a single motor. Does not use the synch move.
 				void sendDynamixelMove(unsigned char servo, int pos, int speed);
 
-				//Transmits the stop to move a single motor. When the Arbotix recieves this command it will 
-				//slow the servo down to is slowest setting, then quickly query the servo for its current 
+				//Transmits the stop to move a single motor. When the Arbotix recieves this command it will
+				//slow the servo down to is slowest setting, then quickly query the servo for its current
 				//position and the set the goal position to be the current position to stop it from moving.
 				void sendDynamixelStop(unsigned char servo);
 
@@ -490,7 +491,7 @@ class ARDUINO_PORT ofArduino{
 
 		protected:
 				bool _initialized;
-    
+
                 void initPins();
                 int _totalDigitalPins;
 
@@ -534,7 +535,7 @@ class ARDUINO_PORT ofArduino{
 				int _minorFirmwareVersion;
 				std::string _firmwareName;
 				bool _firmwareReceived;
-	
+
 				// sum of majorFirmwareVersion * 10 + minorFirmwareVersion
 				int _firmwareVersionSum;
 

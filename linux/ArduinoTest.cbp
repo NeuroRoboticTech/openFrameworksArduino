@@ -17,9 +17,10 @@
 					<Add directory="../src" />
 				</Compiler>
 				<Linker>
-					<Add directory="Debug" />
 					<Add library="openFrameworksArduinoD" />
 					<Add library="boost_thread" />
+					<Add library="boost_system" />
+					<Add directory="Debug" />
 				</Linker>
 			</Target>
 			<Target title="Release">
@@ -34,19 +35,20 @@
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
-					<Add directory="Release" />
 					<Add library="openFrameworksArduino" />
 					<Add library="boost_thread" />
+					<Add library="boost_system" />
+					<Add directory="Release" />
 				</Linker>
 			</Target>
 		</Build>
-		<Unit filename="../examples/ArduinoTest.h">
-		</Unit>
-		<Unit filename="../examples/ArduinoTest.cpp">
-		</Unit>
-		<Unit filename="../examples/Test.cpp">
-		</Unit>
-		<Extensions />
+		<Unit filename="../examples/ArduinoTest.cpp" />
+		<Unit filename="../examples/ArduinoTest.h" />
+		<Unit filename="../examples/Test.cpp" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+		</Extensions>
 	</Project>
 </CodeBlocks_project_file>
-
