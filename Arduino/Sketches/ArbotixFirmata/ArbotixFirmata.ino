@@ -78,6 +78,9 @@
   #define DEBUG_SERIAL 1
 //#endif
 
+//57600 256000 230400 115200
+#define FIRMATA_BAUD_RATE 115200
+
 /*==============================================================================
  * GLOBAL VARIABLES
  *============================================================================*/
@@ -1243,7 +1246,7 @@ void setup()
   Firmata.attach(DEBUG_DATA, systemDebugCallback);
 #endif
 
-  Firmata.begin(115200); //57600 256000 230400 115200
+  Firmata.begin(FIRMATA_BAUD_RATE); 
   systemResetCallback();  // reset to default config
 
 #ifdef ENABLE_COMMANDER
@@ -1255,6 +1258,7 @@ void setup()
     debugSerial.print(FIRMATA_MAJOR_VERSION); debugSerial.print(".");
     debugSerial.print(FIRMATA_MINOR_VERSION); debugSerial.print(".");
     debugSerial.println(FIRMATA_BUGFIX_VERSION);
+    debugSerial.print("Firmata Baud Rate: "); debugSerial.println(FIRMATA_BAUD_RATE);
   #endif
 #else 
   #ifdef DEBUG_SERIAL
@@ -1264,6 +1268,7 @@ void setup()
     debugSerial.print(FIRMATA_MAJOR_VERSION); debugSerial.print(".");
     debugSerial.print(FIRMATA_MINOR_VERSION); debugSerial.print(".");
     debugSerial.println(FIRMATA_BUGFIX_VERSION);
+    debugSerial.print("Firmata Baud Rate: "); debugSerial.println(FIRMATA_BAUD_RATE);
   #endif
 #endif
 
