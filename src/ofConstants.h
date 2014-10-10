@@ -175,9 +175,9 @@ enum ofTargetPlatform{
 		//#include "EGL/egl.h"
 		//#include "EGL/eglext.h"
     #else // normal linux
-        #include <GL/glew.h>
-        #include <GL/gl.h>
-        #include <GL/glx.h>
+        //#include <GL/glew.h>
+        //#include <GL/gl.h>
+        //#include <GL/glx.h>
     #endif
 
     // for some reason, this isn't defined at compile time,
