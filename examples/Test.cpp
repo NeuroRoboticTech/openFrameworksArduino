@@ -7,7 +7,7 @@ int main(int argc, char** argv)
 	int iMotorCount = 0;
 
 #ifdef TARGET_WIN32
-	if(!ard.connect("COM6", 230400)) //38400 57600 115200 230400 256000
+	if(!ard.connect("COM6", 115200)) //38400 57600 115200 230400 256000
 #else
 	if(!ard.connect("ttyUSB0", 57600)) //38400 57600 115200 230400 256000
 #endif

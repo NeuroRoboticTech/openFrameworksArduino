@@ -22,11 +22,11 @@
 #ifndef ax12_h
 #define ax12_h
 
-#define AX12_MAX_SERVOS             30
+#define AX12_MAX_SERVOS             50
 #define AX12_BUFFER_SIZE            32
 #define AX12_SYNC_DATA_PER_SERVO	4
 #define AX12_SYNC_TOTAL_PER_SERVO	5
-#define AX12_MAX_SYNCH_BUFFER_SIZE  150
+#define AX12_MAX_SYNCH_BUFFER_SIZE  250
 
 /** Configuration **/
 #if defined(ARBOTIX)

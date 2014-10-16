@@ -65,7 +65,7 @@
 #define SYSEX_COMMANDER_DATA		    0x55 // Data packet with commander remote control buttons pressed.
 
 
-#define DYNAMIXEL_TOTAL_SERVOS 30
+#define DYNAMIXEL_TOTAL_SERVOS AX12_MAX_SERVOS
 #define DYNAMIXEL_RX_PIN 10	 
 #define DYNAMIXEL_TX_PIN 11
 
@@ -75,7 +75,7 @@
 
 //#ifdef ENABLE_COMMANDER
   //If defined then it setups an additional serial debug port to use.
-  #define DEBUG_SERIAL 1
+  //#define DEBUG_SERIAL 1
 //#endif
 
 //57600 256000 230400 115200
@@ -695,10 +695,10 @@ void sysexCallback(byte command, byte argc, byte *argv)
       reportDynServos[servo] = report;
 
 #ifdef DEBUG_SERIAL
-      debugSerial.print("Recieved Dynamixel Config");  
-      debugSerial.print(", Servo: "); debugSerial.print(servo);
-      debugSerial.print(", Report: "); debugSerial.print(report);
-      debugSerial.print ("\n");
+      //debugSerial.print("Recieved Dynamixel Config");  
+      //debugSerial.print(", Servo: "); debugSerial.print(servo);
+      //debugSerial.print(", Report: "); debugSerial.print(report);
+      //debugSerial.print ("\n");
 #endif
     }
     break;
@@ -1088,11 +1088,11 @@ void sendDynamixelKeyData(byte servo)
       aryCustomSysEx[5] = checksum;
       
 #ifdef DEBUG_SERIAL
-      //debugSerial.print("Key  Servo: "); debugSerial.print(servo); 
-      //debugSerial.print(", pos: "); debugSerial.print(pos); 
-      //debugSerial.print(", speed: "); debugSerial.print(speed); 
-      //debugSerial.print(", checksum: "); debugSerial.print(checksum); 
-      //debugSerial.print ("\n");
+      debugSerial.print("Key  Servo: "); debugSerial.print(servo); 
+      debugSerial.print(", pos: "); debugSerial.print(pos); 
+      debugSerial.print(", speed: "); debugSerial.print(speed); 
+      debugSerial.print(", checksum: "); debugSerial.print(checksum); 
+      debugSerial.print ("\n");
 #endif
 
       // send Dynamixel data

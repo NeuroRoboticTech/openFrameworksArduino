@@ -90,7 +90,7 @@
 #define FIRMATA_SYSEX_NON_REALTIME                      0x7E // MIDI Reserved for non-realtime messages
 #define FIRMATA_SYSEX_REALTIME                          0x7F // MIDI Reserved for realtime messages
 
-#define MAX_DYNAMIXEL_SERVOS							30
+#define MAX_DYNAMIXEL_SERVOS							50
 #define DYNAMIXEL_KEY_DATA_LENGTH						6*2+1
 #define DYNAMIXEL_ALL_DATA_LENGTH						10*2+1
 #define DYNAMIXEL_GET_REGISTER_LENGTH					5*2+1
