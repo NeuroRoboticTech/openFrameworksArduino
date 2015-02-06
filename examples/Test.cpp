@@ -1,13 +1,17 @@
 #include "ArduinoTest.h"
 
-int main(int argc, char** argv)
+#ifdef TARGET_WIN32
+#include "HexapodTimingTest.h"
+#endif
+
+int RunArduinoTest()
 {
 	ArduinoTest ard;
 	bool bForward = false;
 	int iMotorCount = 0;
 
 #ifdef TARGET_WIN32
-	if(!ard.connect("COM6", 115200)) //38400 57600 115200 230400 256000
+	if(!ard.connect("COM6", 256000)) //38400 57600 115200 230400 256000
 #else
 	if(!ard.connect("ttyUSB0", 57600)) //38400 57600 115200 230400 256000
 #endif
@@ -53,6 +57,49 @@ int main(int argc, char** argv)
 
 
 	}
+}
+
+#ifdef WIN32
+
+int RunHexapodTimingTest()
+{
+	HexapodTimingTest ard;
+	unsigned long long lStartTick;
+	bool bStartedTimer = false;
+	double dblUpdateTime = 0;
+
+	if(!ard.connect("COM6", 256000)) //38400 57600 115200 230400 256000
+	{
+		std::cout << "Failed to connect to arduino!";
+		return -1;
+	}
+
+	ard.sendFirmwareVersionRequest();
+
+	while(!ard.m_bSetupArduino || (ard.m_bSetupArduino && dblUpdateTime < 5)) //for(int i=0; i<1000000; i++, iMotorCount++)
+	{
+		//std::cout << "i: " << i << "\r\n";
+
+		ard.update();
+
+		if(ard.m_bSetupArduino && !bStartedTimer)
+		{
+			bStartedTimer = true;
+			lStartTick = osg::Timer::instance()->tick();
+		}
+		else if(bStartedTimer)
+			dblUpdateTime = osg::Timer::instance()->delta_s(lStartTick, osg::Timer::instance()->tick());
+	}
+
+	ard.shutdownArduino();
 
 	return 0;
 }
+#endif
+
+int main(int argc, char** argv)
+{
+	return RunArduinoTest();
+	//return RunHexapodTimingTest();
+}
+

@@ -1,122 +1,127 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-	<ItemGroup Label="ProjectConfigurations">
-		<ProjectConfiguration Include="Debug|Win32">
-			<Configuration>Debug</Configuration>
-			<Platform>Win32</Platform>
-		</ProjectConfiguration>
-		<ProjectConfiguration Include="Release|Win32">
-			<Configuration>Release</Configuration>
-			<Platform>Win32</Platform>
-		</ProjectConfiguration>
-	</ItemGroup>
-	<PropertyGroup Label="Globals">
-		<ProjectGuid>{A06255B5-34BF-EC4B-9C6E-862E5EC87E2B}</ProjectGuid>
-		<RootNamespace>ArduinoTest</RootNamespace>
-		<Keyword>Win32Proj</Keyword>
-	</PropertyGroup>
-	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-		<ConfigurationType>Application</ConfigurationType>
-		<CharacterSet>MultiByte</CharacterSet>
-		<UseDebugLibraries>true</UseDebugLibraries>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-		<ConfigurationType>Application</ConfigurationType>
-		<CharacterSet>MultiByte</CharacterSet>
-		<WholeProgramOptimization>true</WholeProgramOptimization>
-		<UseDebugLibraries>false</UseDebugLibraries>
-	</PropertyGroup>
-	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-	<ImportGroup Label="ExtensionSettings">
-	</ImportGroup>
-	<ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
-		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-	</ImportGroup>
-	<ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
-		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-	</ImportGroup>
-	<PropertyGroup Label="UserMacros" />
-	<PropertyGroup>
-		<_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
-		<OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Debug\</OutDir>
-		<IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">obj\x32\Debug\ArduinoTest\</IntDir>
-		<TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">ArduinoTestD</TargetName>
-		<LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
-		<OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Release\</OutDir>
-		<IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">obj\x32\Release\ArduinoTest\</IntDir>
-		<TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">ArduinoTest</TargetName>
-		<LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
-	</PropertyGroup>
-	<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-		<ClCompile>
-			<Optimization>Disabled</Optimization>
-			<AdditionalIncludeDirectories>$(BOOST_ROOT);..\src;$(OSG_ROOT)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-			<PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-			<MinimalRebuild>true</MinimalRebuild>
-			<BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-			<RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-			<FunctionLevelLinking>true</FunctionLevelLinking>
-			<PrecompiledHeader></PrecompiledHeader>
-			<WarningLevel>Level3</WarningLevel>
-		<ExceptionHandling>Async</ExceptionHandling>
-			<DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-		</ClCompile>
-		<ResourceCompile>
-			<PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-			<AdditionalIncludeDirectories>$(BOOST_ROOT);..\src;$(OSG_ROOT)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-		</ResourceCompile>
-		<Link>
-			<AdditionalDependencies>Debug\openFrameworksArduinoD.lib;%(AdditionalDependencies)</AdditionalDependencies>
-			<OutputFile>$(OutDir)ArduinoTestD.exe</OutputFile>
-			<AdditionalLibraryDirectories>$(BOOST_ROOT)\lib;$(OSG_ROOT)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-			<SubSystem>Console</SubSystem>
-			<GenerateDebugInformation>true</GenerateDebugInformation>
-			<ProgramDataBaseFileName>$(OutDir)ArduinoTestD.pdb</ProgramDataBaseFileName>
-			<EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
-			<TargetMachine>MachineX86</TargetMachine>
-		</Link>
-	</ItemDefinitionGroup>
-	<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-		<ClCompile>
-			<Optimization>Full</Optimization>
-			<AdditionalIncludeDirectories>$(BOOST_ROOT);..\src;$(OSG_ROOT)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-			<PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-			<MinimalRebuild>false</MinimalRebuild>
-			<StringPooling>true</StringPooling>
-			<RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-			<FunctionLevelLinking>true</FunctionLevelLinking>
-			<PrecompiledHeader></PrecompiledHeader>
-			<WarningLevel>Level3</WarningLevel>
-		<ExceptionHandling>Async</ExceptionHandling>
-			<DebugInformationFormat></DebugInformationFormat>
-		</ClCompile>
-		<ResourceCompile>
-			<PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-			<AdditionalIncludeDirectories>$(BOOST_ROOT);..\src;$(OSG_ROOT)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-		</ResourceCompile>
-		<Link>
-			<AdditionalDependencies>Release\openFrameworksArduino.lib;%(AdditionalDependencies)</AdditionalDependencies>
-			<OutputFile>$(OutDir)ArduinoTest.exe</OutputFile>
-			<AdditionalLibraryDirectories>$(BOOST_ROOT)\lib;$(OSG_ROOT)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-			<SubSystem>Console</SubSystem>
-			<GenerateDebugInformation>false</GenerateDebugInformation>
-			<OptimizeReferences>true</OptimizeReferences>
-			<EnableCOMDATFolding>true</EnableCOMDATFolding>
-			<EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
-			<TargetMachine>MachineX86</TargetMachine>
-		</Link>
-	</ItemDefinitionGroup>
-	<ItemGroup>
-		<ClInclude Include="..\examples\ArduinoTest.h" />
-	</ItemGroup>
-	<ItemGroup>
-		<ClCompile Include="..\examples\ArduinoTest.cpp">
-		</ClCompile>
-		<ClCompile Include="..\examples\Test.cpp">
-		</ClCompile>
-	</ItemGroup>
-	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-	<ImportGroup Label="ExtensionTargets">
-	</ImportGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{A06255B5-34BF-EC4B-9C6E-862E5EC87E2B}</ProjectGuid>
+    <RootNamespace>ArduinoTest</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <UseDebugLibraries>true</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <UseDebugLibraries>false</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">obj\x32\Debug\ArduinoTest\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">ArduinoTestD</TargetName>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">obj\x32\Release\ArduinoTest\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">ArduinoTest</TargetName>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(BOOST_ROOT);..\src;$(OSG_ROOT)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(BOOST_ROOT);..\src;$(OSG_ROOT)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>Debug\openFrameworksArduinoD.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)ArduinoTestD.exe</OutputFile>
+      <AdditionalLibraryDirectories>$(BOOST_ROOT)\lib;$(OSG_ROOT)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDataBaseFileName>$(OutDir)ArduinoTestD.pdb</ProgramDataBaseFileName>
+      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>Full</Optimization>
+      <AdditionalIncludeDirectories>$(BOOST_ROOT);..\src;$(OSG_ROOT)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(BOOST_ROOT);..\src;$(OSG_ROOT)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>Release\openFrameworksArduino.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)ArduinoTest.exe</OutputFile>
+      <AdditionalLibraryDirectories>$(BOOST_ROOT)\lib;$(OSG_ROOT)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\examples\ArduinoTest.h" />
+    <ClInclude Include="..\examples\HexapodTimingTest.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\examples\ArduinoTest.cpp">
+    </ClCompile>
+    <ClCompile Include="..\examples\HexapodTimingTest.cpp" />
+    <ClCompile Include="..\examples\Test.cpp">
+    </ClCompile>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
 </Project>
