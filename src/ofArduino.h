@@ -236,139 +236,139 @@ class ARDUINO_PORT ofArduino{
 
 
                 // --- setup functions
-				bool connect(std::string device, int baud = 57600);
+				virtual bool connect(std::string device, int baud = 57600);
 				// opens a serial port connection to the arduino
 
-				void disconnect();
+				virtual void disconnect();
 				// closes the serial port connection
 
-				bool isArduinoReady();
+				virtual bool isArduinoReady();
 
-				void  setUseDelay(bool bDelay);
+				virtual void  setUseDelay(bool bDelay);
 
-				void update();
+				virtual void update();
 				// polls data from the serial port, this has to be called periodically
 
-				bool isInitialized();
+				virtual bool isInitialized();
 				// returns true if a succesfull connection has been established and the Arduino has reported a firmware
 
-				void setDigitalHistoryLength(int length);
-				void setAnalogHistoryLength(int length);
-				void setStringHistoryLength(int length);
-				void setSysExHistoryLength(int nSysEx);
+				virtual void setDigitalHistoryLength(int length);
+				virtual void setAnalogHistoryLength(int length);
+				virtual void setStringHistoryLength(int length);
+				virtual void setSysExHistoryLength(int nSysEx);
 
 				// --- senders
 
-				void sendDigitalPinMode(int pin, int mode);
+				virtual void sendDigitalPinMode(int pin, int mode);
 				// pin: 2-13
 				// mode: ARD_INPUT, ARD_OUTPUT, ARD_PWM
 				// setting a pins mode to ARD_INPUT turns on reporting for the port the pin is on
 				// Note: analog pins 0-5 can be used as digitial pins 16-21 but if the mode of _one_ of these pins is set to ARD_INPUT then _all_ analog pin reporting will be turned off
 
-				void sendAnalogPinReporting(int pin, int mode);
+				virtual void sendAnalogPinReporting(int pin, int mode);
 				// pin: 0-5
 				// mode: ARD_ON or ARD_OFF
 				// Note: analog pins 0-5 can be used as digitial pins 16-21 but if reporting for _one_ analog pin is enabled then reporting for _all_ of digital pin 16-21 will be turned off
 
-				void sendDigital(int pin, int value, bool force = false);
+				virtual void sendDigital(int pin, int value, bool force = false);
 				// pin: 2-13
 				// value: ARD_LOW or ARD_HIGH
 				// the pins mode has to be set to ARD_OUTPUT or ARD_INPUT (in the latter mode pull-up resistors are enabled/disabled)
 				// Note: pin 16-21 can also be used if analog inputs 0-5 are used as digital pins
 
-				void sendPwm(int pin, int value, bool force = false);
+				virtual void sendPwm(int pin, int value, bool force = false);
 				// pin: 3, 5, 6, 9, 10 and 11
 				// value: 0 (always off) to 255 (always on).
 				// the pins mode has to be set to ARD_PWM
 				// TODO check if the PWM bug still is there causing frequent digital port reporting...
 
-				void sendSysEx(int command, std::vector<unsigned char> data);
+				virtual void sendSysEx(int command, std::vector<unsigned char> data);
 
-				void sendString(std::string str);
+				virtual void sendString(std::string str);
 				// firmata can not handle strings longer than 12 characters.
 
-				void sendProtocolVersionRequest();
+				virtual void sendProtocolVersionRequest();
 
-				void sendFirmwareVersionRequest();
+				virtual void sendFirmwareVersionRequest();
 
-				void sendReset();
+				virtual void sendReset();
 
 				// --- senders for SysEx communication
 
-				void sendSysExBegin();
+				virtual void sendSysExBegin();
 				// sends the FIRMATA_START_SYSEX command
 
-				void sendSysExEnd();
+				virtual void sendSysExEnd();
 				// sends the FIRMATA_END_SYSEX command
 
-				void sendByte(unsigned char value);
+				virtual void sendByte(unsigned char value);
 				// sends a byte without wrapping it in a firmata message, data has to be in the 0-127 range,
 				// values > 127 will be interpreted as commands.
 
-				void sendValueAsTwo7bitBytes(int value);
+				virtual void sendValueAsTwo7bitBytes(int value);
 				// sends a value as two 7-bit bytes without wrapping it in a firmata message
 				// values in the range 0 - 16384 will be sent as two bytes within the 0-127 data range.
 
 				// --- getters
 
-				int getPwm(int pin);
+				virtual int getPwm(int pin);
 				// pin: 3, 5, 6, 9, 10 and 11
 				// returns the last set PWM value (0-255) for the given pin
 				// the pins mode has to be ARD_PWM
 				// Note: pin 16-21 can also be used if analog inputs 0-5 are used as digital pins
 
-				int getDigital(int pin);
+				virtual int getDigital(int pin);
 				// pin: 2-13
 				// returns the last received value (if the pin mode is ARD_INPUT) or the last set value (if the pin mode is ARD_OUTPUT) for the given pin
 				// Note: pin 16-21 can also be used if analog inputs 0-5 are used as digital pins
 
-				int getAnalog(int pin);
+				virtual int getAnalog(int pin);
 				// pin: 0-5
 				// returns the last received analog value (0-1023) for the given pin
 
-				std::vector<unsigned char> getSysEx();
+				virtual std::vector<unsigned char> getSysEx();
 				// returns the last received SysEx message
 
-				std::string getString();
+				virtual std::string getString();
 				// returns the last received string
 
-				int getMajorProtocolVersion();
+				virtual int getMajorProtocolVersion();
 				// returns the major firmware version
 
-				int getMinorProtocolVersion();
+				virtual int getMinorProtocolVersion();
 				// returns the minor firmware version
 
-				int getMajorFirmwareVersion();
+				virtual int getMajorFirmwareVersion();
 				// returns the major firmware version
 
-				int getMinorFirmwareVersion();
+				virtual int getMinorFirmwareVersion();
 				// returns the minor firmware version
 
-				std::string getFirmwareName();
+				virtual std::string getFirmwareName();
 				// returns the name of the firmware
 
-				std::list<int>* getDigitalHistory(int pin);
+				virtual std::list<int>* getDigitalHistory(int pin);
 				// pin: 2-13
 				// returns a pointer to the digital data history list for the given pin
 				// Note: pin 16-21 can also be used if analog inputs 0-5 are used as digital pins
 
-				std::list<int>* getAnalogHistory(int pin);
+				virtual std::list<int>* getAnalogHistory(int pin);
 				// pin: 0-5
 				// returns a pointer to the analog data history list for the given pin
 
-				std::list<std::vector<unsigned char> >* getSysExHistory();
+				virtual std::list<std::vector<unsigned char> >* getSysExHistory();
 				// returns a pointer to the SysEx history
 
-				std::list<std::string>* getStringHistory();
+				virtual std::list<std::string>* getStringHistory();
 				// returns a pointer to the string history
 
-				int makeWord(unsigned char low, unsigned char  high);
+				virtual int makeWord(unsigned char low, unsigned char  high);
 				//Combines two bytes into a word
 
-				unsigned char  getLowByte(int val);
+				virtual unsigned char  getLowByte(int val);
 				//Gets the low byte of an int
 
-				unsigned char  getHighByte(int val);
+				virtual unsigned char  getHighByte(int val);
 				//gets the high byte of an int.
 
 				ofDynamixelData _dynamixelServos[MAX_DYNAMIXEL_SERVOS];
@@ -433,64 +433,64 @@ class ARDUINO_PORT ofArduino{
 				// triggered when a commander data update packet is received, the servo ID is passed as an argument
 
 				// -- servo
-			    void sendServo(int pin, int value, bool force=false);
+			    virtual void sendServo(int pin, int value, bool force=false);
                 // pin: 9, 10
 				// the pin has to have a servo attached
 
 				// angle parameter DEPRECATED as of Firmata 2.2
-                void sendServoAttach(int pin, int minPulse=544, int maxPulse=2400, int angle=180);
+                virtual void sendServoAttach(int pin, int minPulse=544, int maxPulse=2400, int angle=180);
 				// pin: 9, 10
                 // attaches a servo to a pin
 
 				// sendServoDetach DEPRECATED as of Firmata 2.2
-                void sendServoDetach(int pin);
+                virtual void sendServoDetach(int pin);
 				// pin: 9, 10
                 // detaches a servo from a pin, the pin mode remains as OUTPUT
 
-				int getServo(int pin);
+				virtual int getServo(int pin);
 				// returns the last set servo value for a pin if the pin has a servo attached
 
 				//Tells an arbotix board to monitor a given servo and report back its data.
-				void sendDynamixelServoAttach(unsigned char servo);
+				virtual void sendDynamixelServoAttach(unsigned char servo);
 
 				//Tells an arbotix board to quit monitoring a given servo and report back its data.
-				void sendDynamixelServoDetach(unsigned char servo);
+				virtual void sendDynamixelServoDetach(unsigned char servo);
 
 				//Sends a SynchMove start command to the Arbotix telling it that a new set of move commands are coming.
-				void sendDynamixelSynchMoveStart();
+				virtual void sendDynamixelSynchMoveStart();
 
 				//Transmits the command to setup a motor as part of a synch motor move command.
 				//You can setup any number of moves to participate in this move command and then
 				//call sendDynamixelSynchMoveExecute to trigger the movement.
-				void sendDynamixelSynchMoveAdd(unsigned char servo, int pos, int speed);
+				virtual void sendDynamixelSynchMoveAdd(unsigned char servo, int pos, int speed);
 
 				//Transmits the command to move the servos that have been setup using addDynamixelSynchMove
-				void sendDynamixelSynchMoveExecute();
+				virtual void sendDynamixelSynchMoveExecute();
 
 				//Transmits the command to move a single motor. Does not use the synch move.
-				void sendDynamixelMove(unsigned char servo, int pos, int speed);
+				virtual void sendDynamixelMove(unsigned char servo, int pos, int speed);
 
 				//Transmits the stop to move a single motor. When the Arbotix recieves this command it will
 				//slow the servo down to is slowest setting, then quickly query the servo for its current
 				//position and the set the goal position to be the current position to stop it from moving.
-				void sendDynamixelStop(unsigned char servo);
+				virtual void sendDynamixelStop(unsigned char servo);
 
 				//Transmits the command to set a byte of the servo register.
-				void sendDynamixelSetRegister(unsigned char servo, unsigned char reg, unsigned char length, unsigned int value);
+				virtual void sendDynamixelSetRegister(unsigned char servo, unsigned char reg, unsigned char length, unsigned int value);
 
 				//Transmits the command to get a byte of the servo register.
-				void sendDynamixelGetRegister(unsigned char servo, unsigned char reg, unsigned char length);
+				virtual void sendDynamixelGetRegister(unsigned char servo, unsigned char reg, unsigned char length);
 
 				//Transmits the command to get a byte of the servo register.
-				void sendDynamixelConfigureServo(unsigned char servo, unsigned int cwlimit, unsigned int ccwlimit, 
+				virtual void sendDynamixelConfigureServo(unsigned char servo, unsigned int cwlimit, unsigned int ccwlimit, 
 												 unsigned int maxtorque, unsigned char delaytime, 
 												 unsigned char cwcomplmargin, unsigned char ccwcomplmargin,
 												 unsigned char cwcomplslope, unsigned char ccwcomplslope);
 
 				//Transmits the command to check if the servo is moving and when it is no longer moving send a signal back.
-				void sendDynamixelStopped(unsigned char servo);
+				virtual void sendDynamixelStopped(unsigned char servo);
 
-				bool waitForSysExMessage(unsigned char cmd, unsigned int timeout_sec = 1);
+				virtual bool waitForSysExMessage(unsigned char cmd, unsigned int timeout_sec = 1);
 
 		protected:
 				bool _initialized;
@@ -498,19 +498,19 @@ class ARDUINO_PORT ofArduino{
                 void initPins();
                 int _totalDigitalPins;
 
-				void sendDigitalPinReporting(int pin, int mode);
+				virtual void sendDigitalPinReporting(int pin, int mode);
 				// sets pin reporting to ARD_ON or ARD_OFF
 				// enables / disables reporting for the pins port
 
-				void sendDigitalPortReporting(int port, int mode);
+				virtual void sendDigitalPortReporting(int port, int mode);
 				// sets port reporting to ARD_ON or ARD_OFF
 				// enables / disables reporting for ports 0-2
 				// port 0: pins 2-7  (0,1 are serial RX/TX)
 				// port 1: pins 8-13 (14,15 are disabled for the crystal)
 				// port 2: pins 16-21 analog pins used as digital, all analog reporting will be turned off if this is set to ARD_ON
 
-				void processData(unsigned char inputData);
-				void processDigitalPort(int port, unsigned char value);
+				virtual void processData(unsigned char inputData);
+				virtual void processDigitalPort(int port, unsigned char value);
 				virtual void processSysExData(std::vector<unsigned char> data);
 
 				virtual void checkIncomingSysExMessage(unsigned char cmd);
