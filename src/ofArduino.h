@@ -482,7 +482,10 @@ class ARDUINO_PORT ofArduino{
 				void sendDynamixelGetRegister(unsigned char servo, unsigned char reg, unsigned char length);
 
 				//Transmits the command to get a byte of the servo register.
-				void sendDynamixelConfigureServo(unsigned char servo, unsigned int cwlimit, unsigned int ccwlimit, unsigned int maxtorque, unsigned char delaytime);
+				void sendDynamixelConfigureServo(unsigned char servo, unsigned int cwlimit, unsigned int ccwlimit, 
+												 unsigned int maxtorque, unsigned char delaytime, 
+												 unsigned char cwcomplmargin, unsigned char ccwcomplmargin,
+												 unsigned char cwcomplslope, unsigned char ccwcomplslope);
 
 				//Transmits the command to check if the servo is moving and when it is no longer moving send a signal back.
 				void sendDynamixelStopped(unsigned char servo);

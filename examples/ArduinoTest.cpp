@@ -86,7 +86,7 @@ void ArduinoTest::setupArduino(const int & version)
 	ret = this->waitForSysExMessage(SYSEX_DYNAMIXEL_GET_REGISTER, 2);
 	ret = this->waitForSysExMessage(SYSEX_DYNAMIXEL_SET_REGISTER, 2);
 
-	this->sendDynamixelConfigureServo(TC_ID, 170, 800, 1023, 1); 
+	this->sendDynamixelConfigureServo(TC_ID, 170, 800, 1023, 1, 1, 1, 32, 32); 
 
 	//Test waiting for motor to stop
 	this->sendDynamixelMove(TC_ID, 512, 0);

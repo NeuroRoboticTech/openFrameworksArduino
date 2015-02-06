@@ -1166,14 +1166,17 @@ void ofArduino::sendDynamixelGetRegister(unsigned char servo, unsigned char reg,
 }
 
 //Transmits the command to get a byte of the servo register.
-void ofArduino::sendDynamixelConfigureServo(unsigned char servo, unsigned int cwlimit, unsigned int ccwlimit, unsigned int maxtorque, unsigned char delaytime) {
+void ofArduino::sendDynamixelConfigureServo(unsigned char servo, unsigned int cwlimit, unsigned int ccwlimit, 
+											unsigned int maxtorque, unsigned char delaytime, 
+										    unsigned char cwcomplmargin, unsigned char ccwcomplmargin,
+											unsigned char cwcomplslope, unsigned char ccwcomplslope) {
 	unsigned char cwlimit0 = getLowByte(cwlimit);
 	unsigned char cwlimit1 = getHighByte(cwlimit);
 	unsigned char ccwlimit0 = getLowByte(ccwlimit);
 	unsigned char ccwlimit1 = getHighByte(ccwlimit);
 	unsigned char maxtorque0 = getLowByte(maxtorque);
 	unsigned char maxtorque1 = getHighByte(maxtorque);
-	int checksum = (~(servo + cwlimit0 + cwlimit1 + ccwlimit0 + ccwlimit1 + maxtorque0 + maxtorque1 + delaytime)) & 0xFF;
+	int checksum = (~(servo + cwlimit0 + cwlimit1 + ccwlimit0 + ccwlimit1 + maxtorque0 + maxtorque1 + delaytime + cwcomplmargin + ccwcomplmargin + cwcomplslope + ccwcomplslope)) & 0xFF;
 
 	//Send a sysex to let the arbotix know that we are starting a new synch move command
 	std::vector<unsigned char> sysexData;
@@ -1185,6 +1188,10 @@ void ofArduino::sendDynamixelConfigureServo(unsigned char servo, unsigned int cw
 	sysexData.push_back(maxtorque0);
 	sysexData.push_back(maxtorque1);
 	sysexData.push_back(delaytime);
+	sysexData.push_back(cwcomplmargin);
+	sysexData.push_back(ccwcomplmargin);
+	sysexData.push_back(cwcomplslope);
+	sysexData.push_back(ccwcomplslope);
 	sysexData.push_back(checksum);
 	this->sendSysEx(SYSEX_DYNAMIXEL_CONFIGURE_SERVO, sysexData);
 }

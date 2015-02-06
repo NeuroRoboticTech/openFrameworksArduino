@@ -79,7 +79,7 @@
 //#endif
 
 //57600 256000 230400 115200
-#define FIRMATA_BAUD_RATE 115200
+#define FIRMATA_BAUD_RATE 256000
 
 /*==============================================================================
  * GLOBAL VARIABLES
@@ -871,9 +871,14 @@ void sysexCallback(byte command, byte argc, byte *argv)
       byte maxtorque0 = argv[10] + (argv[11] << 7);
       byte maxtorque1 = argv[12] + (argv[13] << 7);
       byte delaytime = argv[14] + (argv[15] << 7);
-      byte recChecksum = argv[16] + (argv[17] << 7);
+      byte cwmargin = argv[16] + (argv[17] << 7);
+      byte ccwmargin = argv[18] + (argv[19] << 7);
+      byte cwslope = argv[20] + (argv[21] << 7);
+      byte ccwslope = argv[22] + (argv[23] << 7);
+      byte recChecksum = argv[24] + (argv[25] << 7);
       int checksum = (~(servo + cwlimit0 + cwlimit1 + ccwlimit0 + ccwlimit1 +
-                      maxtorque0 + maxtorque1 + delaytime)) & 0xFF;
+                      maxtorque0 + maxtorque1 + delaytime + cwmargin + ccwmargin + 
+                      cwslope + ccwslope)) & 0xFF;
 
       int cwlimit = ax12MakeWord(cwlimit0, cwlimit1);
       int ccwlimit = ax12MakeWord(ccwlimit0, ccwlimit1);
@@ -901,6 +906,30 @@ void sysexCallback(byte command, byte argc, byte *argv)
         if(GetReturnDelayTime(servo) != delaytime)
         {
           SetReturnDelayTime(servo, delaytime);
+          delay(10);
+        }
+
+        if(GetCWComplianceMargin(servo) != cwmargin)
+        {
+          SetCWComplianceMargin(servo, cwmargin);
+          delay(10);
+        }
+
+        if(GetCCWComplianceMargin(servo) != ccwmargin)
+        {
+          SetCCWComplianceMargin(servo, ccwmargin);
+          delay(10);
+        }
+
+        if(GetCWComplianceSlope(servo) != cwslope)
+        {
+          SetCWComplianceSlope(servo, cwslope);
+          delay(10);
+        }
+
+        if(GetCCWComplianceSlope(servo) != ccwslope)
+        {
+          SetCCWComplianceSlope(servo, ccwslope);
           delay(10);
         }
       }
