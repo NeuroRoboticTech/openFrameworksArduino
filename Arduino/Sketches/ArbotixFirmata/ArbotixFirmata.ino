@@ -941,11 +941,16 @@ void sysexCallback(byte command, byte argc, byte *argv)
       debugSerial.print(", servo: "); debugSerial.print(servo);
       debugSerial.print(", cwlimit: "); debugSerial.print(cwlimit);
       debugSerial.print(", ccwlimit: "); debugSerial.print(ccwlimit);
+      debugSerial.print(", cwcomplim: "); debugSerial.print(cwmargin);
+      debugSerial.print(", ccwcomplim: "); debugSerial.print(ccwmargin);
+      debugSerial.print(", cwcomslope: "); debugSerial.print(cwslope);
+      debugSerial.print(", ccwcomslope: "); debugSerial.print(ccwslope);
       debugSerial.print(", maxtorque: "); debugSerial.print(maxtorque);
       debugSerial.print(", delaytime: "); debugSerial.print(delaytime);
       debugSerial.print(", rec checksum: "); debugSerial.print(recChecksum);
       debugSerial.print(", checksum: "); debugSerial.print(checksum);
       debugSerial.print ("\n");
+      
 #endif
     }
     break;
@@ -1116,13 +1121,13 @@ void sendDynamixelKeyData(byte servo)
       int checksum = (~(aryCustomSysEx[0] + pos + speed)) & 0xFF;
       aryCustomSysEx[5] = checksum;
       
-#ifdef DEBUG_SERIAL
-      debugSerial.print("Key  Servo: "); debugSerial.print(servo); 
-      debugSerial.print(", pos: "); debugSerial.print(pos); 
-      debugSerial.print(", speed: "); debugSerial.print(speed); 
-      debugSerial.print(", checksum: "); debugSerial.print(checksum); 
-      debugSerial.print ("\n");
-#endif
+//#ifdef DEBUG_SERIAL
+//      debugSerial.print("Key  Servo: "); debugSerial.print(servo); 
+//      debugSerial.print(", pos: "); debugSerial.print(pos); 
+//      debugSerial.print(", speed: "); debugSerial.print(speed); 
+//      debugSerial.print(", checksum: "); debugSerial.print(checksum); 
+//      debugSerial.print ("\n");
+//#endif
 
       // send Dynamixel data
       Firmata.sendSysex(SYSEX_DYNAMIXEL_KEY_SERVO_DATA, customSysExLength, aryCustomSysEx);
