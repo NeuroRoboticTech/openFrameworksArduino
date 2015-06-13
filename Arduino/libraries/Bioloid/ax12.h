@@ -189,7 +189,7 @@ extern unsigned char dynamixel_bus_config[AX12_MAX_SERVOS];
 #define GetMaxTorque(id) (ax12GetRegister(id, AX_MAX_TORQUE_L, 2))
 #define SetTorqueLimit(id, limit) (ax12SetRegister2(id, AX_TORQUE_LIMIT_L, limit))
 #define GetTorqueLimit(id) (ax12GetRegister(id, AX_TORQUE_LIMIT_L, 2))
-#define SetReturnDelayTime(id, time) (ax12SetRegister2(id, AX_RETURN_DELAY_TIME, time))
+#define SetReturnDelayTime(id, time) (ax12SetRegister(id, AX_RETURN_DELAY_TIME, time))
 #define GetReturnDelayTime(id) (ax12GetRegister(id, AX_RETURN_DELAY_TIME, 1))
 #define IsMoving(id) (ax12GetRegister(id, AX_MOVING, 1))
 #define SetCWComplianceMargin(id, limit) (ax12SetRegister(id, AX_CW_COMPLIANCE_MARGIN, limit))
