@@ -113,11 +113,14 @@
   <ItemGroup>
     <ClInclude Include="..\examples\ArduinoTest.h" />
     <ClInclude Include="..\examples\HexapodTimingTest.h" />
+    <ClInclude Include="..\examples\PlaybackMovements.h" />
+    <ClInclude Include="..\examples\stdafx.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\examples\ArduinoTest.cpp">
     </ClCompile>
     <ClCompile Include="..\examples\HexapodTimingTest.cpp" />
+    <ClCompile Include="..\examples\PlaybackMovements.cpp" />
     <ClCompile Include="..\examples\Test.cpp">
     </ClCompile>
   </ItemGroup>

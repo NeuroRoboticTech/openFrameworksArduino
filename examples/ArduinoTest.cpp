@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "ArduinoTest.h"
 
 #define TC_ID 1

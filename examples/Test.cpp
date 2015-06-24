@@ -1,4 +1,6 @@
+#include "stdafx.h"
 #include "ArduinoTest.h"
+#include "PlaybackMovements.h"
 
 #ifdef TARGET_WIN32
 #include "HexapodTimingTest.h"
@@ -59,6 +61,32 @@ int RunArduinoTest()
 	}
 }
 
+
+int RunPlaybackMovements()
+{
+	PlaybackMovements ard;
+
+#ifdef TARGET_WIN32
+	if(!ard.connect("COM9", 256000)) //38400 57600 115200 230400 256000
+#else
+	if(!ard.connect("ttyUSB0", 57600)) //38400 57600 115200 230400 256000
+#endif
+	{
+		std::cout << "Failed to connect to arduino!";
+		return -1;
+	}
+
+	//Need to do this to init the pins, get the firmware version, and  call setupArduino.
+	//Will stay in update loop looking for signal. When it arrives Setup will be called
+	//and we can start processing.
+	ard.sendFirmwareVersionRequest();	
+
+	while(!ard.done()) //for(int i=0; i<1000000; i++, iMotorCount++)
+		ard.update();
+
+	return 0;
+}
+
 #ifdef WIN32
 #ifdef INCLUDE_TIMING
 
@@ -101,7 +129,8 @@ int RunHexapodTimingTest()
 
 int main(int argc, char** argv)
 {
-	return RunArduinoTest();
+	//return RunArduinoTest();
 	//return RunHexapodTimingTest();
+	return RunPlaybackMovements();
 }
 
