@@ -75,7 +75,7 @@
 
 //#ifdef ENABLE_COMMANDER
   //If defined then it setups an additional serial debug port to use.
-  //#define DEBUG_SERIAL 1
+  #define DEBUG_SERIAL 1
 //#endif
 
 //57600 256000 230400 115200
@@ -163,6 +163,8 @@ dynamixelReadData reportDynData[DYNAMIXEL_TOTAL_SERVOS];
   CommanderData commanderData;
   CommanderSS command = CommanderSS(&debugSerial);
 #endif
+
+unsigned long resetTime = 0;
 
 /*==============================================================================
  * FUNCTIONS
@@ -453,15 +455,15 @@ void sendDynamixelTransmitError(byte command, byte servo, byte recChecksum, byte
   int checksum = (~(command + servo)) & 0xFF;
   aryCustomSysEx[2] = checksum;
 
-#ifdef DEBUG_SERIAL
-  debugSerial.println("Sending transmit error");  
-  debugSerial.print("cmd: "); debugSerial.print(command);
-  debugSerial.print(", servo: "); debugSerial.print(servo);
-  debugSerial.print(", recChecksum: "); debugSerial.print(recChecksum);
-  debugSerial.print(", calcChecksum: "); debugSerial.print(calcChecksum);
-  debugSerial.print(", checksum: "); debugSerial.print(checksum);
-  debugSerial.print ("\n");
-#endif
+//#ifdef DEBUG_SERIAL
+//  debugSerial.println("Sending transmit error");  
+//  debugSerial.print("cmd: "); debugSerial.print(command);
+//  debugSerial.print(", servo: "); debugSerial.print(servo);
+//  debugSerial.print(", recChecksum: "); debugSerial.print(recChecksum);
+//  debugSerial.print(", calcChecksum: "); debugSerial.print(calcChecksum);
+//  debugSerial.print(", checksum: "); debugSerial.print(checksum);
+//  debugSerial.print ("\n");
+//#endif
 
   // send Dynamixel error data
   Firmata.sendSysex(SYSEX_DYNAMIXEL_TRANSMIT_ERROR, customSysExLength, aryCustomSysEx);
@@ -476,15 +478,15 @@ void sendDynamixelRegister(byte servo, byte reg, byte length, int value) {
   int checksum = (~(servo + reg + value)) & 0xFF;
   aryCustomSysEx[4] = checksum;
 
-#ifdef DEBUG_SERIAL
-  debugSerial.println("Sending dynamixel register");  
-  debugSerial.print("servo: "); debugSerial.print(servo);
-  debugSerial.print(", reg: "); debugSerial.print(reg);
-  debugSerial.print(", length: "); debugSerial.print(length);
-  debugSerial.print(", value: "); debugSerial.print(value);
-  debugSerial.print(", checksum: "); debugSerial.print(checksum);
-  debugSerial.print ("\n");
-#endif
+//#ifdef DEBUG_SERIAL
+//  debugSerial.println("Sending dynamixel register");  
+//  debugSerial.print("servo: "); debugSerial.print(servo);
+//  debugSerial.print(", reg: "); debugSerial.print(reg);
+//  debugSerial.print(", length: "); debugSerial.print(length);
+//  debugSerial.print(", value: "); debugSerial.print(value);
+//  debugSerial.print(", checksum: "); debugSerial.print(checksum);
+//  debugSerial.print ("\n");
+//#endif
 
   // send Dynamixel error data
   Firmata.sendSysex(SYSEX_DYNAMIXEL_GET_REGISTER, customSysExLength, aryCustomSysEx);
@@ -727,6 +729,13 @@ void sysexCallback(byte command, byte argc, byte *argv)
         sendDynamixelTransmitError(SYSEX_DYNAMIXEL_SYNCH_MOVE_ADD, servo, recChecksum, checksum);
       
 #ifdef DEBUG_SERIAL
+        debugSerial.print("D,");
+        debugSerial.print(millis() - resetTime);
+        debugSerial.print(",");
+        debugSerial.print(servo);
+        debugSerial.print(",");
+        debugSerial.println(pos);
+
       //debugSerial.println("Recieved Dynamixel synch move add");  
       //debugSerial.print(",count: "); debugSerial.print(totalSynchServos);
       //debugSerial.print(",servo: "); debugSerial.print(servo);
@@ -766,15 +775,15 @@ void sysexCallback(byte command, byte argc, byte *argv)
       else
         sendDynamixelTransmitError(SYSEX_DYNAMIXEL_MOVE, servo, recChecksum, checksum);
     
-#ifdef DEBUG_SERIAL
-      debugSerial.print("Recieved Dynamixel move ");  
-      debugSerial.print(", servo: "); debugSerial.print(servo);
-      debugSerial.print(", pos: "); debugSerial.print(pos);
-      debugSerial.print(", speed: "); debugSerial.print(speed);
-      debugSerial.print(", rec checksum: "); debugSerial.print(recChecksum);
-      debugSerial.print(", checksum: "); debugSerial.print(checksum);
-      debugSerial.print ("\n");
-#endif
+//#ifdef DEBUG_SERIAL
+//      debugSerial.print("Recieved Dynamixel move ");  
+//      debugSerial.print(", servo: "); debugSerial.print(servo);
+//      debugSerial.print(", pos: "); debugSerial.print(pos);
+//      debugSerial.print(", speed: "); debugSerial.print(speed);
+//      debugSerial.print(", rec checksum: "); debugSerial.print(recChecksum);
+//      debugSerial.print(", checksum: "); debugSerial.print(checksum);
+//      debugSerial.print ("\n");
+//#endif
     }
     break;
   case SYSEX_DYNAMIXEL_STOP: {
@@ -799,14 +808,14 @@ void sysexCallback(byte command, byte argc, byte *argv)
       else
         sendDynamixelTransmitError(SYSEX_DYNAMIXEL_STOP, servo, recChecksum, checksum);
     
-#ifdef DEBUG_SERIAL
-      debugSerial.print("Recieved Dynamixel Stop ");  
-      debugSerial.print(", servo: "); debugSerial.print(servo);
-      debugSerial.print(", pos: "); debugSerial.print(pos);
-      debugSerial.print(", rec checksum: "); debugSerial.print(recChecksum);
-      debugSerial.print(", checksum: "); debugSerial.print(checksum);
-      debugSerial.print ("\n");
-#endif
+//#ifdef DEBUG_SERIAL
+//      debugSerial.print("Recieved Dynamixel Stop ");  
+//      debugSerial.print(", servo: "); debugSerial.print(servo);
+//      debugSerial.print(", pos: "); debugSerial.print(pos);
+//      debugSerial.print(", rec checksum: "); debugSerial.print(recChecksum);
+//      debugSerial.print(", checksum: "); debugSerial.print(checksum);
+//      debugSerial.print ("\n");
+//#endif
     }
     break;
   case SYSEX_DYNAMIXEL_SET_REGISTER: {
@@ -830,16 +839,16 @@ void sysexCallback(byte command, byte argc, byte *argv)
       else
         sendDynamixelTransmitError(SYSEX_DYNAMIXEL_SET_REGISTER, servo, recChecksum, checksum);
     
-#ifdef DEBUG_SERIAL
-      debugSerial.print("Set Dynamixel register");
-      debugSerial.print(", servo: "); debugSerial.print(servo);
-      debugSerial.print(", reg: "); debugSerial.print(reg);
-      debugSerial.print(", length: "); debugSerial.print(length);
-      debugSerial.print(", value: "); debugSerial.print(value);
-      debugSerial.print(", rec checksum: "); debugSerial.print(recChecksum);
-      debugSerial.print(", checksum: "); debugSerial.print(checksum);
-      debugSerial.print ("\n");
-#endif
+//#ifdef DEBUG_SERIAL
+//      debugSerial.print("Set Dynamixel register");
+//      debugSerial.print(", servo: "); debugSerial.print(servo);
+//      debugSerial.print(", reg: "); debugSerial.print(reg);
+//      debugSerial.print(", length: "); debugSerial.print(length);
+//      debugSerial.print(", value: "); debugSerial.print(value);
+//      debugSerial.print(", rec checksum: "); debugSerial.print(recChecksum);
+//      debugSerial.print(", checksum: "); debugSerial.print(checksum);
+//      debugSerial.print ("\n");
+//#endif
     }
     break;
   case SYSEX_DYNAMIXEL_GET_REGISTER: {
@@ -853,9 +862,9 @@ void sysexCallback(byte command, byte argc, byte *argv)
         //ax12SetRegister2(servo, reg, 310);
         //delay(20);
         int regVal = ax12GetRegister(servo, reg, length);
-#ifdef DEBUG_SERIAL
-      debugSerial.print("RegVal: "); debugSerial.println(regVal);
-#endif        
+//#ifdef DEBUG_SERIAL
+//      debugSerial.print("RegVal: "); debugSerial.println(regVal);
+//#endif        
         sendDynamixelRegister(servo, reg, length, regVal);
       }
       else
@@ -936,22 +945,21 @@ void sysexCallback(byte command, byte argc, byte *argv)
       else
         sendDynamixelTransmitError(SYSEX_DYNAMIXEL_CONFIGURE_SERVO, servo, recChecksum, checksum);
     
-#ifdef DEBUG_SERIAL
-      debugSerial.print("Dynamixel config servo");
-      debugSerial.print(", servo: "); debugSerial.print(servo);
-      debugSerial.print(", cwlimit: "); debugSerial.print(cwlimit);
-      debugSerial.print(", ccwlimit: "); debugSerial.print(ccwlimit);
-      debugSerial.print(", cwcomplim: "); debugSerial.print(cwmargin);
-      debugSerial.print(", ccwcomplim: "); debugSerial.print(ccwmargin);
-      debugSerial.print(", cwcomslope: "); debugSerial.print(cwslope);
-      debugSerial.print(", ccwcomslope: "); debugSerial.print(ccwslope);
-      debugSerial.print(", maxtorque: "); debugSerial.print(maxtorque);
-      debugSerial.print(", delaytime: "); debugSerial.print(delaytime);
-      debugSerial.print(", rec checksum: "); debugSerial.print(recChecksum);
-      debugSerial.print(", checksum: "); debugSerial.print(checksum);
-      debugSerial.print ("\n");
-      
-#endif
+//#ifdef DEBUG_SERIAL
+//      debugSerial.print("Dynamixel config servo");
+//      debugSerial.print(", servo: "); debugSerial.print(servo);
+//      debugSerial.print(", cwlimit: "); debugSerial.print(cwlimit);
+//      debugSerial.print(", ccwlimit: "); debugSerial.print(ccwlimit);
+//      debugSerial.print(", cwcomplim: "); debugSerial.print(cwmargin);
+//      debugSerial.print(", ccwcomplim: "); debugSerial.print(ccwmargin);
+//      debugSerial.print(", cwcomslope: "); debugSerial.print(cwslope);
+//      debugSerial.print(", ccwcomslope: "); debugSerial.print(ccwslope);
+//      debugSerial.print(", maxtorque: "); debugSerial.print(maxtorque);
+//      debugSerial.print(", delaytime: "); debugSerial.print(delaytime);
+//      debugSerial.print(", rec checksum: "); debugSerial.print(recChecksum);
+//      debugSerial.print(", checksum: "); debugSerial.print(checksum);
+//      debugSerial.print ("\n");      
+//#endif
     }
     break;
   case SYSEX_DYNAMIXEL_STOPPED: {
@@ -961,12 +969,12 @@ void sysexCallback(byte command, byte argc, byte *argv)
       
       reportDynServosMove[servo] = report;
 
-#ifdef DEBUG_SERIAL
-      debugSerial.print("Recieved Dynamixel Stopped ");  
-      debugSerial.print(", Servo: "); debugSerial.print(servo);
-      debugSerial.print(", Report: "); debugSerial.print(report);
-      debugSerial.print ("\n");
-#endif
+//#ifdef DEBUG_SERIAL
+//      debugSerial.print("Recieved Dynamixel Stopped ");  
+//      debugSerial.print(", Servo: "); debugSerial.print(servo);
+//      debugSerial.print(", Report: "); debugSerial.print(report);
+//      debugSerial.print ("\n");
+//#endif
     }
     break;
   }
@@ -1121,13 +1129,20 @@ void sendDynamixelKeyData(byte servo)
       int checksum = (~(aryCustomSysEx[0] + pos + speed)) & 0xFF;
       aryCustomSysEx[5] = checksum;
       
-//#ifdef DEBUG_SERIAL
+#ifdef DEBUG_SERIAL
+          debugSerial.print("A,");
+          debugSerial.print(millis() - resetTime);
+          debugSerial.print(",");
+          debugSerial.print(servo);
+          debugSerial.print(",");
+          debugSerial.println(pos);
+
 //      debugSerial.print("Key  Servo: "); debugSerial.print(servo); 
 //      debugSerial.print(", pos: "); debugSerial.print(pos); 
 //      debugSerial.print(", speed: "); debugSerial.print(speed); 
 //      debugSerial.print(", checksum: "); debugSerial.print(checksum); 
 //      debugSerial.print ("\n");
-//#endif
+#endif
 
       // send Dynamixel data
       Firmata.sendSysex(SYSEX_DYNAMIXEL_KEY_SERVO_DATA, customSysExLength, aryCustomSysEx);
@@ -1146,9 +1161,9 @@ void sendDynamixelStopped(byte servo)
   int checksum = (~(servo)) & 0xFF;
   aryCustomSysEx[1] = checksum;
       
-#ifdef DEBUG_SERIAL
-      debugSerial.print("SendDynamixelStopped  Servo: "); debugSerial.println(servo); 
-#endif
+//#ifdef DEBUG_SERIAL
+//      debugSerial.print("SendDynamixelStopped  Servo: "); debugSerial.println(servo); 
+//#endif
 
   // send Dynamixel data
   Firmata.sendSysex(SYSEX_DYNAMIXEL_STOPPED, customSysExLength, aryCustomSysEx);
@@ -1237,16 +1252,16 @@ void checkCommander() {
                         commanderData.buttons)) & 0xFF;
       aryCustomSysEx[5] = checksum;
                         
-#ifdef DEBUG_SERIAL
-      debugSerial.print("Commander ");
-      debugSerial.print(", WalkV: "); debugSerial.print(commanderData.walkV); 
-      debugSerial.print(", WalkH: "); debugSerial.print(commanderData.walkH); 
-      debugSerial.print(", LookV: "); debugSerial.print(commanderData.lookV); 
-      debugSerial.print(", LookH: "); debugSerial.print(commanderData.lookH); 
-      debugSerial.print(", Buttons: "); debugSerial.print(commanderData.buttons); 
-      debugSerial.print(", checksum: "); debugSerial.print(checksum); 
-      debugSerial.print ("\n");
-#endif
+//#ifdef DEBUG_SERIAL
+//      debugSerial.print("Commander ");
+//      debugSerial.print(", WalkV: "); debugSerial.print(commanderData.walkV); 
+//      debugSerial.print(", WalkH: "); debugSerial.print(commanderData.walkH); 
+//      debugSerial.print(", LookV: "); debugSerial.print(commanderData.lookV); 
+//      debugSerial.print(", LookH: "); debugSerial.print(commanderData.lookH); 
+//      debugSerial.print(", Buttons: "); debugSerial.print(commanderData.buttons); 
+//      debugSerial.print(", checksum: "); debugSerial.print(checksum); 
+//      debugSerial.print ("\n");
+//#endif
       
       // send commander data
       Firmata.sendSysex(SYSEX_COMMANDER_DATA, customSysExLength, aryCustomSysEx);
@@ -1306,6 +1321,7 @@ void setup()
   #endif
 #endif
 
+  resetTime = millis();
 }
 
 /*==============================================================================
