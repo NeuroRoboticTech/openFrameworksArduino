@@ -177,8 +177,9 @@
 #define LOCK                        1
 
 #include <inttypes.h>
+#include "HardwareSerial.h"
 
-class DynamixelClass {
+class DynamixelSerial {
 protected:
 	
 	HardwareSerial *stream;
@@ -205,8 +206,10 @@ protected:
 	int Return_Delay_Byte;
 	  
 	int read_error(void);
+
 	
 public:
+	DynamixelSerial(HardwareSerial *ss);
 	
 	void begin(long baud, unsigned char directionPin);
 	void begin(long baud);
@@ -253,7 +256,5 @@ public:
 	int torqueStatus(unsigned char ID, bool Status);
 	int ledStatus(unsigned char ID, bool Status);
 };
-
-extern DynamixelClass Dynamixel;
 
 #endif
