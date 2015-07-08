@@ -26,7 +26,7 @@
  *  PROGMEM transition_t name[] = {{NULL,count},{pose_name,1000},...} 
  */
 
-#include "ax12.h"
+#include "DynamixelSerial.h"
 
 /* pose engine runs at 30Hz (33ms between frames) 
    recommended values for interpolateSetup are of the form X*BIOLOID_FRAME_LENGTH - 1 */
@@ -45,7 +45,7 @@ class BioloidController
 {
   public:
     /* For compatibility with legacy code */
-    BioloidController(long baud);               // baud usually 1000000
+    BioloidController(DynamixelSerial *dynamix);               // baud usually 1000000
     
     /* New-style constructor/setup */ 
     BioloidController() {};
@@ -99,6 +99,7 @@ class BioloidController
     
     transition_t * sequence;                    // sequence we are running
     int transitions;                            // how many transitions we have left to load
-   
+
+    DynamixelSerial *controller;
 };
 #endif
