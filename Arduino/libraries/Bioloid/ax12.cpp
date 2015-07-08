@@ -480,7 +480,6 @@ void ax12PrintSyncData(int length, unsigned char checksum)
 		}
     } 
 
-    ax12write(checksum);
 	Serial.print(checksum);  
 	Serial.print("\n");
 }

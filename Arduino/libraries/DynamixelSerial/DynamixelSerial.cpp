@@ -115,6 +115,7 @@ DynamixelSerial::DynamixelSerial(HardwareSerial *ss){
 	Error_Byte = 0; 
 	Return_Delay_Byte = 0;
 	stream = ss;
+	use_speed_synch = true;
 }
 
 // Private Methods //////////////////////////////////////////////////////////////
@@ -550,6 +551,53 @@ int DynamixelSerial::readPosition(unsigned char ID)
     
 			Position_Low_Byte = readData();            // Position Bytes
 			Position_High_Byte = readData();
+			Position_Long_Byte = Position_High_Byte << 8; 
+			Position_Long_Byte = Position_Long_Byte + Position_Low_Byte;
+		}
+    }
+	return (Position_Long_Byte);     // Returns the read position
+}
+
+/** Read register value(s) */
+int DynamixelSerial::readRegister(unsigned char id, int regstart, int length)
+{	
+    Checksum = (~(id + 6 + regstart + length))&0xFF;
+  
+	switchCom(Direction_Pin,Tx_MODE);
+    sendData(AX_START);
+    sendData(AX_START);
+    sendData(id);
+    sendData(4);
+    sendData(AX_READ_DATA);
+    sendData(regstart);
+    sendData(length);
+    sendData(Checksum);
+    delayus(TX_DELAY_TIME);
+	switchCom(Direction_Pin,Rx_MODE);
+	
+    Position_Long_Byte = -1;
+	Time_Counter = 0;
+    while((availableData() < 7) & (Time_Counter < TIME_OUT)){
+		Time_Counter++;
+		delayus(1000);
+    }
+	
+    while (availableData() > 0){
+		Incoming_Byte = readData();
+		if ( (Incoming_Byte == 255) & (peekData() == 255) ){
+			readData();                            // Start Bytes
+			readData();                            // Ax-12 ID
+			readData();                            // Length
+			if( (Error_Byte = readData()) != 0 )   // Error
+				return (Error_Byte*(-1));
+    
+			Position_Low_Byte = readData();            // Position Bytes
+			
+			if(length == 2)
+				Position_High_Byte = readData();
+			else
+				Position_High_Byte = 0;
+				
 			Position_Long_Byte = Position_High_Byte << 8; 
 			Position_Long_Byte = Position_Long_Byte + Position_Low_Byte;
 		}
@@ -1056,3 +1104,162 @@ int DynamixelSerial::readLoad(unsigned char ID)
     }
 	return (Load_Long_Byte);     // Returns the read position
 }
+
+int DynamixelSerial::makeWord(int low, int high) 
+{
+	return (low + (high<<8));
+};
+
+int DynamixelSerial::getLowByte(int val) 
+{
+	return (val & 0xff);
+};
+
+int DynamixelSerial::getHighByte(int val) 
+{
+	return ((val & 0xff00)>> 8);
+};
+
+void DynamixelSerial::startSyncWrite(bool use_speed)
+{
+	total_sync_servos = 0;
+	use_speed_synch = use_speed;
+}
+
+int DynamixelSerial::dataSizePerServoSynch()
+{
+	if(use_speed_synch)
+		return AX12_SYNCH_PER_SERVO_WSPEED;
+	else
+		return AX12_SYNCH_PER_SERVO_WOSPEED;
+}
+
+void DynamixelSerial::addServoToSync(int id, int goal_pos, int goal_speed)
+{
+	int data_size_per_servo = dataSizePerServoSynch();
+
+	int idx = total_sync_servos*data_size_per_servo;
+
+	sync_data[idx] = id;
+	sync_data[idx+1] = getLowByte(goal_pos);
+	sync_data[idx+2] = getHighByte(goal_pos);
+
+	if(use_speed_synch) {
+		sync_data[idx+3] = getLowByte(goal_speed);
+		sync_data[idx+4] = getHighByte(goal_speed);
+	}
+
+	total_sync_servos++;	
+	
+	//Serial.print("servos: ");  
+	//Serial.print(g_total_sync_servos);  
+	//Serial.print("idx: ");  
+	//Serial.print(idx);  
+	//Serial.print(" id: ");  
+	//Serial.print(id);  
+	//Serial.print(" pos: ");  
+	//Serial.print(goal_pos); 
+	//Serial.print(" speed: ");  
+	//Serial.print(goal_speed); 
+	//Serial.print("\n");
+		
+	//for(int i=0; i<(idx+data_size_per_servo); i++)
+	//{
+	//	Serial.print(g_sync_data[i]);  
+	//	Serial.print(", ");
+	//}
+	//Serial.print("\n");
+}
+
+void DynamixelSerial::writeSyncData(bool print_data)
+{	
+    int temp;
+	int data_size_per_servo = dataSizePerServoSynch();
+
+	int	length = 4 + (data_size_per_servo * total_sync_servos);		
+    int Checksum = 254 + length + AX_SYNC_WRITE + AX_GOAL_POSITION_L + data_size_per_servo;
+
+	switchCom(Direction_Pin,Tx_MODE);
+    sendData(AX_START);
+    sendData(AX_START);
+    sendData(BROADCAST_ID);
+    sendData(length);
+    sendData(AX_SYNC_WRITE);
+    sendData(AX_GOAL_POSITION_L);
+    sendData(data_size_per_servo);
+
+	int dataidx=0, id=0;
+    for(int servo=0; servo<total_sync_servos; servo++)
+    {
+		id = sync_data[dataidx];
+		sendData(id);  //Write the id
+		Checksum += id;
+		dataidx++;
+		
+		//Now write the data for the servo
+		for(int servo_data_idx=0; servo_data_idx<data_size_per_servo; servo_data_idx++)
+		{
+			temp = sync_data[dataidx];
+			Checksum += temp;
+			sendData(temp);
+			dataidx++;
+		}
+    } 
+
+	unsigned char sum = (0xff - (Checksum % 256));
+    sendData(sum);
+    delayus(TX_DELAY_TIME);
+	switchCom(Direction_Pin,Rx_MODE);
+	
+	if(print_data)
+		printSyncData(length, sum);
+	
+}
+
+void DynamixelSerial::printSyncData(int length, unsigned char checksum)
+{
+	int data_size_per_servo = dataSizePerServoSynch();
+	
+	Serial.print(0xFF);  
+	Serial.print(", ");
+
+	Serial.print(0xFF);  
+	Serial.print(", ");
+
+	Serial.print(0xFE);  
+	Serial.print(", ");
+
+	Serial.print(length);  
+	Serial.print(", ");
+
+	Serial.print(AX_SYNC_WRITE);  
+	Serial.print(", ");
+
+	Serial.print(AX_GOAL_POSITION_L);  
+	Serial.print(", ");
+
+	Serial.print(AX12_SYNC_DATA_PER_SERVO);  
+	Serial.print(", ");
+	
+	int dataidx=0, id=0, temp=0;
+    for(int servo=0; servo<total_sync_servos; servo++)
+    {
+		id = sync_data[dataidx];
+		Serial.print(id);  
+		Serial.print(", ");
+
+		dataidx++;
+		
+		//Now write the data for the servo
+		for(int servo_data_idx=0; servo_data_idx<data_size_per_servo; servo_data_idx++)
+		{
+			temp = sync_data[dataidx];
+			Serial.print(temp);  
+			Serial.print(", ");
+			dataidx++;
+		}
+    } 
+
+	Serial.print(checksum);  
+	Serial.print("\n");
+}	
