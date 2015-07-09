@@ -213,6 +213,7 @@ protected:
 	int Error_Byte; 
 	int Return_Delay_Byte;
 	bool use_speed_synch;
+    unsigned char Status_Return_Level;
 	  
 	int total_sync_servos;
 	unsigned char sync_data[AX12_MAX_SYNCH_BUFFER_SIZE];
@@ -258,6 +259,7 @@ public:
 	int setCMargin(unsigned char ID, unsigned char CWCMargin, unsigned char CCWCMargin);
 	int setCSlope(unsigned char ID, unsigned char CWCSlope, unsigned char CCWCSlope);
 	int setPunch(unsigned char ID, int Punch);
+    int setStatusReturnLevel(unsigned char ID, unsigned char level);
 	
 	int moving(unsigned char ID);
 	int lockRegister(unsigned char ID);

@@ -116,6 +116,7 @@ DynamixelSerial::DynamixelSerial(HardwareSerial *ss){
 	Return_Delay_Byte = 0;
 	stream = ss;
 	use_speed_synch = true;
+    Status_Return_Level = 2;
 }
 
 // Private Methods //////////////////////////////////////////////////////////////
@@ -137,6 +138,10 @@ int DynamixelSerial::read_error(void)
 			Error_Byte = readData();                       // Error
 			Serial.print("Received Error: ");
 			Serial.println(Error_Byte);
+            
+            if(Time_Counter == TIME_OUT)
+                Serial.println("Timed out");
+                
 			return (Error_Byte);
 		}
 	}
@@ -258,7 +263,10 @@ int DynamixelSerial::move(unsigned char ID, int Position)
 	delayus(TX_DELAY_TIME);
 	switchCom(Direction_Pin,Rx_MODE);
 
-    return (read_error());                 // Return the read error
+    if(Status_Return_Level == 2)
+        return (read_error());                // Return the read error
+    else
+        return 0;
 }
 
 int DynamixelSerial::moveSpeed(unsigned char ID, int Position, int Speed)
@@ -285,7 +293,10 @@ int DynamixelSerial::moveSpeed(unsigned char ID, int Position, int Speed)
     delayus(TX_DELAY_TIME);
  	switchCom(Direction_Pin,Rx_MODE);
     
-    return (read_error());               // Return the read error
+    if(Status_Return_Level == 2)
+        return (read_error());                // Return the read error
+    else
+        return 0;
 }
 
 int DynamixelSerial::setEndless(unsigned char ID, bool Status)
@@ -984,6 +995,34 @@ int DynamixelSerial::lockRegister(unsigned char ID)
 	switchCom(Direction_Pin,Rx_MODE);
     
     return (read_error());                // Return the read error
+}
+
+int DynamixelSerial::setStatusReturnLevel(unsigned char ID, unsigned char level)
+{   
+    if(level >= 0 && level <=2) {
+        Checksum = (~(ID + AX_SRL_LENGTH + AX_WRITE_DATA + AX_RETURN_LEVEL + level))&0xFF;
+        
+        switchCom(Direction_Pin,Tx_MODE);
+        sendData(AX_START);                // Send Instructions over Serial
+        sendData(AX_START);
+        sendData(ID);
+        sendData(AX_SRL_LENGTH);
+        sendData(AX_WRITE_DATA);
+        sendData(AX_RETURN_LEVEL);
+        sendData(level);
+        sendData(Checksum);
+        delayus(TX_DELAY_TIME);
+        switchCom(Direction_Pin,Rx_MODE);
+        
+        Status_Return_Level = level;
+
+        if(Status_Return_Level == 2)
+            return (read_error());                // Return the read error
+        else
+            return 0;
+    }
+    else
+        return 0;
 }
 
 int DynamixelSerial::RWStatus(unsigned char ID)
