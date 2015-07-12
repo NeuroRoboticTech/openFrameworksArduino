@@ -318,7 +318,10 @@ int DynamixelSerial::setEndless(unsigned char ID, bool Status)
       delayus(TX_DELAY_TIME);
 	  switchCom(Direction_Pin,Rx_MODE);
 
-	  return(read_error());
+      if(Status_Return_Level == 2)
+          return (read_error());                // Return the read error
+      else
+          return 0;
  }
  else
  {
@@ -338,7 +341,10 @@ int DynamixelSerial::setEndless(unsigned char ID, bool Status)
 	 delayus(TX_DELAY_TIME);
 	 switchCom(Direction_Pin,Rx_MODE);
 	 
-	 return (read_error());                 // Return the read error
+      if(Status_Return_Level == 2)
+          return (read_error());                // Return the read error
+      else
+          return 0;
   }
  } 
 
@@ -364,7 +370,10 @@ int DynamixelSerial::turn(unsigned char ID, bool SIDE, int Speed)
 			delayus(TX_DELAY_TIME);
 			switchCom(Direction_Pin,Rx_MODE);
 			
-			return(read_error());               // Return the read error		
+            if(Status_Return_Level == 2)
+                return (read_error());                // Return the read error
+            else
+                return 0;
 		}
 		else
 		{                                            // Move Rigth////////////////////
@@ -386,7 +395,10 @@ int DynamixelSerial::turn(unsigned char ID, bool SIDE, int Speed)
 			delayus(TX_DELAY_TIME);
 			switchCom(Direction_Pin,Rx_MODE);
 			
-			return(read_error());                // Return the read error	
+            if(Status_Return_Level == 2)
+                return (read_error());                // Return the read error
+            else
+                return 0;
 		}
 }
 
@@ -410,7 +422,10 @@ int DynamixelSerial::moveRW(unsigned char ID, int Position)
 	delayus(TX_DELAY_TIME);
 	switchCom(Direction_Pin,Rx_MODE);
 	
-    return (read_error());                 // Return the read error
+    if(Status_Return_Level == 2)
+        return (read_error());                // Return the read error
+    else
+        return 0;
 }
 
 int DynamixelSerial::moveSpeedRW(unsigned char ID, int Position, int Speed)
@@ -437,7 +452,10 @@ int DynamixelSerial::moveSpeedRW(unsigned char ID, int Position, int Speed)
     delayus(TX_DELAY_TIME);
 	switchCom(Direction_Pin,Rx_MODE);
     
-    return (read_error());               // Return the read error
+    if(Status_Return_Level == 2)
+        return (read_error());                // Return the read error
+    else
+        return 0;
 }
 
 void DynamixelSerial::action()
@@ -614,6 +632,44 @@ int DynamixelSerial::readRegister(unsigned char id, int regstart, int length)
 		}
     }
 	return (Position_Long_Byte);     // Returns the read position
+}
+
+/* Set the value of a single-byte register. */
+void DynamixelSerial::setRegister(int id, int regstart, int data)
+{
+    int checksum = ~((id + 4 + AX_WRITE_DATA + regstart + (data&0xff)) % 256);
+
+	switchCom(Direction_Pin,Tx_MODE);
+    sendData(AX_START);
+    sendData(AX_START);
+    sendData(id);
+    sendData(4);    // length
+    sendData(AX_WRITE_DATA);
+    sendData(regstart);
+    sendData(data&0xff);
+    // checksum = 
+    sendData(checksum);
+    delayus(TX_DELAY_TIME);
+	switchCom(Direction_Pin,Rx_MODE);
+}
+
+/* Set the value of a double-byte register. */
+void DynamixelSerial::setRegister2(int id, int regstart, int data)
+{
+    int checksum = ~((id + 5 + AX_WRITE_DATA + regstart + (data&0xFF) + ((data&0xFF00)>>8)) % 256);
+
+	switchCom(Direction_Pin,Tx_MODE);
+    sendData(AX_START);
+    sendData(AX_START);
+    sendData(id);
+    sendData(5);    // length
+    sendData(AX_WRITE_DATA);
+    sendData(regstart);
+    sendData(data&0xff);
+    sendData((data&0xff00)>>8);
+    sendData(checksum);
+    delayus(TX_DELAY_TIME);
+	switchCom(Direction_Pin,Rx_MODE);
 }
 
 int DynamixelSerial::readVoltage(unsigned char ID)
@@ -838,6 +894,16 @@ int DynamixelSerial::readReturnDelayTime(unsigned char ID)
 	return (Return_Delay_Byte);               // Returns the read temperature
 }
 
+int DynamixelSerial::readCWLimit(unsigned char ID)
+{
+    return readRegister(ID, AX_CW_ANGLE_LIMIT_L, 2);
+}
+
+int DynamixelSerial::readCCWLimit(unsigned char ID)
+{
+    return readRegister(ID, AX_CCW_ANGLE_LIMIT_L, 2);
+}
+    
 int DynamixelSerial::setLEDAlarm(unsigned char ID, unsigned char LEDAlarm)
 {    
 	Checksum = (~(ID + AX_LEDALARM_LENGTH + AX_WRITE_DATA + AX_ALARM_LED + LEDAlarm))&0xFF;
@@ -1025,6 +1091,18 @@ int DynamixelSerial::setStatusReturnLevel(unsigned char ID, unsigned char level)
         return 0;
 }
 
+int DynamixelSerial::setCWLimit(unsigned char ID, int limit)
+{
+    setRegister2(ID, AX_CW_ANGLE_LIMIT_L, limit);
+    return 0;
+}
+
+int DynamixelSerial::setCCWLimit(unsigned char ID, int limit)
+{
+    setRegister2(ID, AX_CCW_ANGLE_LIMIT_L, limit);
+    return 0;
+}
+   
 int DynamixelSerial::RWStatus(unsigned char ID)
 {	
     Checksum = (~(ID + AX_RWS_LENGTH  + AX_READ_DATA + AX_REGISTERED_INSTRUCTION + AX_BYTE_READ))&0xFF;

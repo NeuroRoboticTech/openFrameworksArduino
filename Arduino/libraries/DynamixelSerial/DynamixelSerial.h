@@ -260,7 +260,9 @@ public:
 	int setCSlope(unsigned char ID, unsigned char CWCSlope, unsigned char CCWCSlope);
 	int setPunch(unsigned char ID, int Punch);
     int setStatusReturnLevel(unsigned char ID, unsigned char level);
-	
+	int setCWLimit(unsigned char ID, int limit);
+    int setCCWLimit(unsigned char ID, int limit);
+    
 	int moving(unsigned char ID);
 	int lockRegister(unsigned char ID);
 	int RWStatus(unsigned char ID);
@@ -271,8 +273,12 @@ public:
 	int readSpeed(unsigned char ID);
 	int readLoad(unsigned char ID);
 	int readReturnDelayTime(unsigned char ID);
+    int readCWLimit(unsigned char ID);
+    int readCCWLimit(unsigned char ID);
 	
 	int readRegister(unsigned char ID, int regstart, int length);
+    void setRegister(int id, int regstart, int data);
+    void setRegister2(int id, int regstart, int data);
 	
 	int torqueStatus(unsigned char ID, bool Status);
 	int ledStatus(unsigned char ID, bool Status);
@@ -281,7 +287,6 @@ public:
 	int getLowByte(int val);
 	int getHighByte(int val);	
 };
-
 
 
 #endif
