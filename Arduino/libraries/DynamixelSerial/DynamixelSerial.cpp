@@ -1416,3 +1416,23 @@ void DynamixelSerial::printSyncData(int length, unsigned char checksum)
 	Serial.print(checksum);  
 	Serial.print("\n");
 }	
+
+#ifdef __SAM3X8E__
+
+void SetSystemCoreClockFor1Mbaud()
+{
+#define SYS_BOARD_PLLAR     (CKGR_PLLAR_ONE \
+                            | CKGR_PLLAR_MULA(39) \
+                            | CKGR_PLLAR_PLLACOUNT(100) \
+                            | CKGR_PLLAR_DIVA(3))
+
+    // change and update system core clock
+
+    // Configure PLLA
+    PMC->CKGR_PLLAR = SYS_BOARD_PLLAR;
+    while (!(PMC->PMC_SR & PMC_SR_LOCKA));
+    
+    SystemCoreClockUpdate();
+}
+
+#endif

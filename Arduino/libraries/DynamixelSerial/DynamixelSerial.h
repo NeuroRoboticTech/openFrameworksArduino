@@ -187,6 +187,10 @@
 #include <inttypes.h>
 #include "HardwareSerial.h"
 
+#ifdef __SAM3X8E__
+void SetSystemCoreClockFor1Mbaud();
+#endif
+
 class DynamixelSerial {
 protected:
 	
