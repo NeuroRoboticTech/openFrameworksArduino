@@ -75,15 +75,6 @@
 
 #include "DynamixelSerial.h"
 
-// Macro for the selection of the Serial Port
-
-#define sendData(args)  (stream->write(args))    // Write Over Serial
-#define availableData() (stream->available())    // Check Serial Data Available
-#define readData()      (stream->read())         // Read Serial Data
-#define peekData()      (stream->peek())         // Peek Serial Data
-#define beginCom(args)  (stream->begin(args))    // Begin Serial Comunication
-#define endCom()        (stream->end())          // End Serial Comunication
-
 // Macro for Timing
 
 #define delayus(args) (delayMicroseconds(args))  // Delay Microseconds
@@ -117,6 +108,51 @@ DynamixelSerial::DynamixelSerial(HardwareSerial *ss){
 	stream = ss;
 	use_speed_synch = true;
     Status_Return_Level = 2;
+}
+
+void DynamixelSerial::sendData(const uint8_t data)
+{
+	if(stream)
+	{
+		stream->write(data);
+		stream->flush();
+	}
+}
+
+int DynamixelSerial::availableData()
+{
+	if(stream)
+		return stream->available();
+	else
+		return 0;
+}
+
+int DynamixelSerial::readData()
+{
+	if(stream)
+		return stream->read();
+	else
+		return 0;
+}
+
+int DynamixelSerial::peekData()
+{
+	if(stream)
+		return stream->peek();
+	else
+		return 0;
+}
+
+void DynamixelSerial::beginCom(unsigned long baudRate)
+{
+	if(stream)
+		return stream->begin(baudRate);
+}
+
+void DynamixelSerial::endCom()
+{
+	if(stream)
+		return stream->end();
 }
 
 // Private Methods //////////////////////////////////////////////////////////////

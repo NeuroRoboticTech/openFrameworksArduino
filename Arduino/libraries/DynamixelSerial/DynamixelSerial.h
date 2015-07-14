@@ -220,6 +220,13 @@ protected:
 	  
 	int read_error(void);
 	int dataSizePerServoSynch();
+
+	void sendData(const uint8_t data);
+	int availableData();
+	int readData();
+	int peekData();
+	void beginCom(unsigned long baudRate);
+	void endCom();
 	
 public:
 	DynamixelSerial(HardwareSerial *ss);
